@@ -47,7 +47,7 @@ class SaveMess(View):
                 Mess.conversation = Conversation.objects.get(c_id=id_room)
                 Mess.content = data['content']
                 Mess.save()
-            return HttpResponse('Gửi thành công rồi nhé phu 2000')
+            return HttpResponse('Gửi thành công rồi nhé phu 2000tttttt')
         else:
             return redirect('home:home')
 
