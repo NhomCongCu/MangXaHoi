@@ -42,7 +42,7 @@ class Login_user(View):
                     return HttpResponse('success')
                 else:
                     return HttpResponse(
-                        "Tài khoản này chưa được kích hoạt. Hãy kích hoạt tài khoản trước khi đăng nhập")
+                        "Tài khoản này chưa được kích hoạt. Bạn hãy kích hoạt tài khoản trước khi đăng nhập")
             else:
                 return HttpResponse('Thông tin đăng nhập không chính xác. Vui lòng kiểm tra lại')
 
