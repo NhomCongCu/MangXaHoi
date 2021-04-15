@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth import authenticate, login, logout
 
 from django.core.mail import send_mail
@@ -36,15 +38,15 @@ class Login_user(View):
                 user = authenticate(username=MyUser.objects.get(email=username), password=password)
             except:
                 user = authenticate(username=username, password=password)
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return HttpResponse('success')
-                else:
-                    return HttpResponse(
-                        "Tài khoản này chưa được kích hoạt. Bạn hãy kích hoạt tài khoản trước khi đăng nhập")
+            if user:
+                login(request, user)
+                return HttpResponse('success')
             else:
-                return HttpResponse('Thông tin đăng nhập không chính xác. Vui lòng kiểm tra lại')
+                return HttpResponse('Thông tin đăng nhập không chính xác hoặc tài khoản này chưa được kích hoạt. Vui lòng kiểm tra lại')
+            try:
+                user = authenticate(username=MyUser.objects.get(email=username), password=password)
+            except:
+                user = authenticate(username=username, password=password)
 
 
 def logout_user(request):
@@ -155,13 +157,30 @@ class ResetPassword(View):
     def post(self, request, key, ban_ma):
         one_time_pad = MaHoaOneTimePad()
         email = one_time_pad.giai_ma(key, ban_ma)
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
-        if password2 == password1:
-            edit_user = MyUser.objects.get(email=email)
-            edit_user.set_password(password1)
-            edit_user.save()
-        return redirect('home:home')
+        mk1 = request.POST.get('password1')
+        mk2 = request.POST.get('password2')
+        check = {}
+        check["mk1"] = mk1
+        check["mk2"] = mk2
+
+        x = re.search("^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$", mk1)
+        if x:
+            if mk1 == mk2:
+                edit_user = MyUser.objects.get(email=email)
+                edit_user.set_password(mk1)
+                edit_user.save()
+                check["true"] = True
+            else:
+                check["khopMK"] = False
+        else:
+            check["domanhMK"] = False
+        context = {
+            'email': email,
+            'key': key,
+            'ban_ma': ban_ma,
+            'check': check,
+        }
+        return render(request, 'mail/reset_password.html', context)
 
 
 class Check(View):
