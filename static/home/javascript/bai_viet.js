@@ -58,8 +58,8 @@ let home = new Vue({
     created: function () {
         this.get_api_top_hashtag();
         this.get_api_your_friend();
-        setTimeout(() => this.get_api_your_friend(), 0)
-        setInterval(() => this.get_api_your_friend(), 500)
+        // setTimeout(() => this.get_api_your_friend(), 0)
+        // setInterval(() => this.get_api_your_friend(), 10000)
         switch (this.page) {
             case 'Trang chủ Shili':
                 this.get_api_post();
@@ -74,12 +74,10 @@ let home = new Vue({
                 this.api_hashtag_post_func();
                 break;
             case 'profile':
-                setTimeout(() => this.get_profile_func(), 0)
-                setInterval(() => this.get_profile_func(), 500)
+                this.get_profile_func()
                 break;
             case 'all_user':
-                setTimeout(() => this.api_get_all_user_func(), 0)
-                setInterval(() => this.api_get_all_user_func(), 500)
+                this.api_get_all_user_func();
                 break;
         }
     },

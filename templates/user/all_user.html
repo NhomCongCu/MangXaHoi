@@ -7,7 +7,8 @@
         <h3>Tất cả người dùng</h3>
         <template v-if="api_get_all_user.result && api_get_all_user.result.length">
             <div class="row row-cols-1 row-cols-md-3 g-4">
-                <div class="col" v-for="user_item in api_get_all_user.result" :key="user_item.username">
+{#                <div class="col" v-for="user_item in api_get_all_user.result" :key="user_item.username">#}
+                <div class="col" v-for="user_item in api_get_all_user.result" >
                     <div class="card">
                         <img v-if="user_item.avatar" :src="`/media/${user_item.avatar}`"
                              class="avatar_boxFriend"
