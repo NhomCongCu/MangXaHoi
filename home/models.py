@@ -346,12 +346,6 @@ class Database:
         else:
             return False
 
-    # đếm số  tin nhắn của phòng chat
-    def count_mess(self, id_room):
-        sql = "SELECT COUNT(m_id) AS SoTin FROM user_conversation a JOIN user_message b ON a.c_id = b.conversation_id WHERE a.c_id =" + str(
-            id_room)
-        return Message.objects.raw(sql)[0:1][0].SoTin
-
     # lấy nội dung chat của phòng chat
     def get_context_box_chat(self, conversation):
         data = Message.objects.filter(conversation=conversation)

@@ -28,7 +28,7 @@ class BoxChat(View):
                     Conv.save()
                 except:
                     pass
-            get_profile[0]['count_mess'] = database.count_mess(id_room)
+            get_profile[0]['count_mess'] = len(list(Message.objects.filter(conversation=id_room)))
             return JsonResponse({'result': get_profile, 'mess_content': mess_content} ,safe=False)
 
 
