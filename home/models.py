@@ -8,6 +8,13 @@ from user.models import MyUser, Conversation, Message, Follower
 
 class ShiliEmail:
     def form_mail(self, url, content, email):
+        
+
+
+
+
+
+
         form_mail = """
        <!DOCTYPE html>
         <html lang="en">
