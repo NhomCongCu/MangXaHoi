@@ -122,7 +122,7 @@ USE_L10N = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 #
 STATIC_URL = "/static/"
-# STATICFILES_DIRS = [BASE_DIR / "static", '/static/', ]
+STATICFILES_DIRS = [BASE_DIR / "static", '/static/', ]
 STATIC_ROOT = os.path.join(BASE_DIR / "static", '/static/', )
 
 MEDIA_URL = '/media/'
