@@ -16,7 +16,7 @@ class BoxChat(View):
             data = json.loads(request.body.decode('utf-8'))
             user_2_id = str(data['user_2_id'])
             database = Database(request.user.id)
-            username = database.id_convert_username(user_2_id)
+            username = MyUser.objects.get(id=user_2_id)
             get_profile = database.get_profile(username)
             id_room = database.check_box_chat(request.user.id, user_2_id)
             mess_content = database.get_context_box_chat(id_room)
