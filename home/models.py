@@ -331,10 +331,18 @@ class Database:
 
     # kiểm tra xem đã có phòng chat chưa
     def check_box_chat(self, user_1, user_2):
-        sql = "SELECT c_id FROM user_conversation WHERE user_1_id = '" + str(user_1) + "' AND user_2_id = '" + str(
-            user_2) + "' OR user_2_id =  '" + str(user_1) + "' AND user_1_id = '" + str(user_2) + "'"
-        if Conversation.objects.raw(sql)[:1]:
-            return Conversation.objects.raw(sql)[0:1][0].c_id
+        x = Conversation.objects.filter(user_1=user_1, user_2=user_2)
+        y = Conversation.objects.filter(user_1=user_2, user_2=user_1)
+        try:
+            c_id = model_to_dict(x[0])["c_id"]
+        except:
+            pass
+        try:
+            c_id = model_to_dict(y[0])["c_id"]
+        except:
+            pass
+        if x or y:
+            return c_id
         else:
             return False
 
@@ -345,15 +353,11 @@ class Database:
         return Message.objects.raw(sql)[0:1][0].SoTin
 
     # lấy nội dung chat của phòng chat
-    def get_context_box_chat(self, id_room):
-        sql = "SELECT * FROM user_message WHERE conversation_id =" + str(id_room)
-        mess = Conversation.objects.raw(sql)
-        context_box_chat = []
-        for i in mess:
-            thisdict = {}
-            thisdict["from_user_id"] = i.from_user_id
-            thisdict["created_at"] = i.created_at.strftime("%H:%M:%S ngày %m/%d/%Y")
-            thisdict["content"] = i.content
-            thisdict["m_id"] = i.m_id
-            context_box_chat.append(thisdict)
-        return context_box_chat
+    def get_context_box_chat(self, conversation):
+        data = Message.objects.filter(conversation=conversation)
+        a = []
+        for i in data:
+            d = model_to_dict(i)
+            d["created_at"] = i.created_at.strftime("%H:%M:%S ngày %m/%d/%Y")
+            a.append(d)
+        return a

@@ -107,13 +107,13 @@
                                     </div>
                                     <div id="container" class="chat_window_content">
                                         <template v-for="mess in chat_content">
-                                            <div v-if="mess.from_user_id != user_id" data-bs-toggle="tooltip"
+                                            <div v-if="mess.from_user != user_id" data-bs-toggle="tooltip"
                                                  data-bs-placement="right" :title="mess.created_at"
                                                  class="you">
                                                 <div class="content_chat you_left"> [[ mess.content ]]</div>
                                             </div>
                                             <div v-else data-bs-toggle="tooltip" :title="mess.created_at" class="me">
-                                                <div @dblclick="delete_mess_func(mess.m_id,mess.from_user_id)"
+                                                <div @dblclick="delete_mess_func(mess.m_id,mess.from_user)"
                                                      class="content_chat me_right"> [[ mess.content ]]
                                                 </div>
                                             </div>
