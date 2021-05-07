@@ -43,10 +43,10 @@ class Login_user(View):
                 return HttpResponse('success')
             else:
                 return HttpResponse('Thông tin đăng nhập không chính xác hoặc tài khoản này chưa được kích hoạt. Vui lòng kiểm tra lại')
-            try:
-                user = authenticate(username=MyUser.objects.get(email=username), password=password)
-            except:
-                user = authenticate(username=username, password=password)
+            # try:
+            #     user = authenticate(username=MyUser.objects.get(email=username), password=password)
+            # except:
+            #     user = authenticate(username=username, password=password)
 
 
 def logout_user(request):
