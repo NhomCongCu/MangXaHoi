@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 import json
@@ -128,9 +129,8 @@ class ApiHashtag(View):
 class ApiTopHashtag(View):
     def post(self, request):
         if request.user.is_authenticated:
-            database = Database(request.user.id)
-            get_count_top_x_hashtag = database.get_count_top_x_hashtag(12)
-            return JsonResponse({'result': get_count_top_x_hashtag})
+            x = list(Post.objects.all().values('hashtag').annotate(soluot=Count('hashtag')).order_by('-soluot'))
+            return JsonResponse({'result': x[0:10]})
         else:
             return redirect('home:login')
 

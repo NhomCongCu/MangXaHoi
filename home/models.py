@@ -1,6 +1,7 @@
 import os
 import random
 
+from django.db.models import Count
 from django.forms import model_to_dict
 
 from post.models import Post, Comment
@@ -8,7 +9,7 @@ from user.models import MyUser, Conversation, Message, Follower
 
 
 class ShiliEmail:
-    def form_mail(self, url, content,email ,type='welcome'):
+    def form_mail(self, url, content, email, type='welcome'):
         module_dir = os.path.dirname(__file__)
         if type == 'welcome':
             file_path = os.path.join(module_dir, 'stactic/mail/welcome.html')
@@ -96,17 +97,6 @@ class Database:
     def get_post_hashtag(self, hashtag):
         sql = "SELECT * FROM post_post a JOIN user_myuser b ON a.user_id =  b.id WHERE a.hashtag = '" + hashtag + "'"
         return Post.objects.raw(sql)
-
-    # Lấy tên hashtag và  số lượt xuất hiện trong top x hashtag
-    def get_count_top_x_hashtag(self, limit):
-        sql = "SELECT  hashtag,count(hashtag) AS soluot FROM post_post GROUP BY hashtag  ORDER BY soluot DESC"
-        count_top_x_hashtag = []
-        for i in Post.objects.raw(sql)[0:limit]:
-            thisdict = {}
-            thisdict["hashtag"] = i.hashtag
-            thisdict["soluot"] = i.soluot
-            count_top_x_hashtag.append(thisdict)
-        return count_top_x_hashtag
 
     # trả về tất cả comments của bài viết với post_id
     def get_comment_post_id(self, post_id):
