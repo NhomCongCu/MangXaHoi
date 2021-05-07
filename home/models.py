@@ -11,9 +11,9 @@ class ShiliEmail:
     def form_mail(self, url, content,email ,type='welcome'):
         module_dir = os.path.dirname(__file__)
         if type == 'welcome':
-            file_path = os.path.join(module_dir, 'stactic\mail\welcome.html')
+            file_path = os.path.join(module_dir, 'stactic/mail/welcome.html')
         else:
-            file_path = os.path.join(module_dir, 'stactic\mail\pass.html')
+            file_path = os.path.join(module_dir, 'stactic/mail/pass.html')
 
         with open(file_path, "r", encoding='utf-8') as f:
             data = f.read()
