@@ -18,8 +18,8 @@ from user.models import MyUser
 class Index(View):
     def get(self, request):
         if request.user.is_authenticated:
-            with open(os.path.join(PROJECT_ROOT, 'filename')) as f:
-                print(f)
+            # with open(os.path.join(PROJECT_ROOT, 'filename')) as f:
+            #     print(f)
             database = Database(request.user.id)
             kt = database.get_watching(request.user.username)
             if kt:
