@@ -29,7 +29,7 @@ class BoxChat(View):
                 except:
                     pass
             get_profile[0]['count_mess'] = database.count_mess(id_room)
-            return JsonResponse({'result': get_profile, 'mess_content': mess_content})
+            return JsonResponse({'result': get_profile, 'mess_content': mess_content} ,safe=False)
 
 
 

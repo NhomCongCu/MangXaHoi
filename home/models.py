@@ -1,4 +1,7 @@
 import random
+
+from django.forms import model_to_dict
+
 from post.models import Post, Comment
 from user.models import MyUser, Conversation, Message
 
@@ -197,10 +200,24 @@ class Database:
 
     # trả về toàn bộ thông tin người dùng với username
     def get_profile(self, username):
-        sql = "SELECT * FROM user_myuser a WHERE a.username ='" + str(username) + "'"
-        get_profile = MyUser.objects.raw(sql)
+        # sql = "SELECT * FROM user_myuser a WHERE a.username ='" + str(username) + "'"
+        username = MyUser.objects.filter(username=username)
+        a = []
+        for i in username:
+            d = model_to_dict(i)
+            print("===============================")
+            print("===============================")
+            print(type(d["avatar"]))
+
+            print("===============================")
+            print("===============================")
+            # d["category"] = model_to_dict(i.category)
+            # d["spending"] = model_to_dict(i.spending)
+            # d["wallet"] = model_to_dict(i.wallet)
+            a.append(d)
+        # get_profile = MyUser.objects.raw(sql)
         profile = []
-        for i in get_profile:
+        for i in username:
             thisdict = {}
             thisdict["username"] = i.username
             thisdict["user_id"] = i.id
@@ -217,6 +234,8 @@ class Database:
             thisdict["date_joined"] = i.date_joined.strftime("%H:%M:%S ngày %m/%d/%Y")
             thisdict["is_superuser"] = i.is_superuser
             profile.append(thisdict)
+            print(a)
+            print(profile)
         return profile
 
     # Lấy ra tất cả bài viết của username nhập vào
