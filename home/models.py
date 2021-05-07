@@ -3,7 +3,7 @@ import random
 from django.forms import model_to_dict
 
 from post.models import Post, Comment
-from user.models import MyUser, Conversation, Message
+from user.models import MyUser, Conversation, Message, Follower
 
 
 class ShiliEmail:
@@ -321,13 +321,7 @@ class Database:
         return all_user
 
     # kiểm tra xem đã theo dõi chưa
-    def check_id_follow(self, user_1, user_2):
-        sql = "SELECT f_id FROM user_follower WHERE main_user_id = " + str(
-            user_1) + " AND followres_id =  " + str(user_2)
-        if Conversation.objects.raw(sql)[:1]:
-            return Conversation.objects.raw(sql)[:1][0].f_id
-        else:
-            return False
+
 
     # kiểm tra xem đã có phòng chat chưa
     def check_box_chat(self, user_1, user_2):

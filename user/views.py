@@ -89,16 +89,15 @@ class Add_follow(View):
     def post(self, request):
         if request.user.is_authenticated:
             data = json.loads(request.body.decode('utf-8'))
-            database = Database(request.user.id)
-            id_follower = database.check_id_follow(request.user.id, data['id'])
-            if not id_follower:
+            x = Follower.objects.filter(main_user=request.user, followres=data['id'])
+            if not x:
                 fl = Follower()
                 fl.main_user = request.user
                 fl.followres = MyUser.objects.get(id=data['id'])
                 fl.save()
                 return HttpResponse('Follow thành công, hãy tiếp tục theo dõi những người khác')
             else:
-                fl = Follower.objects.get(f_id=id_follower)
+                fl = Follower.objects.get(f_id=x[0].f_id)
                 fl.delete()
                 return HttpResponse('Hủy follow thành công, hãy tiếp tục theo dõi những người khác')
         else:
