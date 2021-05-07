@@ -76,22 +76,18 @@ class Register_user(View):
             new_user.gender = data['gender']
             new_user.is_active = 0
             new_user.save()
-            new_user = MyUser.objects.filter(username=data['username'])
-            if new_user:
-                mail_content = "Hello"
-                mail_title = "Welcome to Shili!"
-                one_time_pad = MaHoaOneTimePad()
-                result = one_time_pad.ma_hoa(email)
-                domain = request.scheme + '://' + request.META['HTTP_HOST']
-                url = domain + '/xacthuc/' + result[0] + '/' + result[1]
-                content = "We're excited to have you get started. First, you need to confirm your account. Just press the button below."
-                theme = ShiliEmail()
-                msg_html = theme.form_mail(url, content, email)
-                send_mail(mail_title, mail_content, "PLC", [email], html_message=msg_html, fail_silently=False)
-                return HttpResponse(
-                    'Đăng kí thành công tài khoản. Kiểm tra email để nhận liên kết kích hoạt tài khoản')
-            else:
-                return HttpResponse('Có lỗi xảy ra! Vui lòng thử lại')
+            one_time_pad = MaHoaOneTimePad()
+            result = one_time_pad.ma_hoa(email)
+            domain = request.scheme + '://' + request.META['HTTP_HOST']
+            url = domain + '/xacthuc/' + result[0] + '/' + result[1]
+            content = "We're excited to have you get started. First, you need to confirm your account. Just press the button below."
+            theme = ShiliEmail()
+            msg_html = theme.form_mail(url, content, email)
+            send_mail( "Welcome to Shili!", "Hello", "PLC", [email], html_message=msg_html, fail_silently=False)
+            return HttpResponse(
+                'Đăng kí thành công tài khoản. Kiểm tra email để nhận liên kết kích hoạt tài khoản')
+        else:
+            return HttpResponse('Có lỗi xảy ra! Vui lòng thử lại')
 
 
 class Send_pass(View):
