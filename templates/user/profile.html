@@ -18,7 +18,7 @@
                      style="background-image: url({% static 'user/images/avatar.png' %});"></div>
             </div>
             <h2 class="text-center my-2" @click="open_link(`/profile/${ profile.username}`)">
-                [[profile.full_name]] </h2>
+                [[profile.first_name]] [[profile.last_name]] </h2>
             <div id="profile_icon" class="d-flex flex-row justify-content-center">
                 <i @click="themes='thongtin'" class="fas fa-info-circle mx-4"></i>
                 <i @click="themes='profile'" class="fas fa-address-book mx-4"></i>
@@ -43,7 +43,7 @@
                                      alt="avatar">
                                 <div class="card-body text-center">
                                     <a class="card-title" :href="domain + `/profile/${ user_item.username}`">
-                                        <h5> [[user_item.full_name]]</h5>
+                                        <h5> [[user_item.first_name +" "+ user_item.last_name ]]</h5>
                                     </a>
                                     <a class="card-text" :href="domain + `/profile/${ user_item.username}`">
                                         <p @click="open_link()"> @[[user_item.username]]</p>
@@ -86,7 +86,7 @@
                                      alt="avatar">
                                 <div class="card-body text-center">
                                     <a class="card-title" :href="domain + `/profile/${ user_item.username}`">
-                                        <h5> [[user_item.full_name]]</h5>
+                                        <h5> [[user_item.first_name +" "+ user_item.last_name ]]</h5>
                                     </a>
                                     <a class="card-text" :href="domain + `/profile/${ user_item.username}`">
                                         <p @click="open_link()"> @[[user_item.username]]</p>
@@ -156,7 +156,8 @@
             {% if username ==  user.username %}
                 <template v-if="themes==='suathongtin'">
                     <div class="user_follow">
-                        <form class="m-3" action="{% url 'user:edit_profile' %}" enctype="multipart/form-data" method="post">
+                        <form class="m-3" action="{% url 'user:edit_profile' %}" enctype="multipart/form-data"
+                              method="post">
                             {% csrf_token %}
 
                             <div class="user_thongtin_edit">
@@ -239,7 +240,7 @@
                                      alt="">
                                 <div>
                                     <div>
-                                        <a class="post_name" :href="domain+`/profile/${item.username}`">[[item.full_name]]</a>
+                                        <a class="post_name" :href="domain+`/profile/${item.username}`">[[item.first_name+" "+item.last_name]]</a>
                                         <label class="post_feeling"><i
                                                 class="fas fa-check-circle"></i> [[item.feeling]]</label>
                                     </div>

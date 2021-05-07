@@ -53,10 +53,7 @@ class Database:
     def __init__(self, userid):
         self.userid = str(userid)
 
-    # Lấy toàn bộ bài đăng của tài khoản đang theo dõi
-    def get_post_index(self):
-        sql = "SELECT * FROM post_post a JOIN user_myuser b ON a.user_id =  b.id WHERE (a.user_id IN(SELECT followres_id FROM user_follower WHERE main_user_id = " + self.userid + ") OR a.user_id = " + self.userid + ")  AND a.public != 'Chỉ Mình Tôi' ORDER BY a.created_at DESC"
-        return Post.objects.raw(sql)
+    # Lấy toàn bộ bài đăng của cacs tài khoản đang theo dõi
 
     # Lấy ra thông tin 1 bài viết với id cụ thể
     def get_post_id(self, post_id):
@@ -117,69 +114,32 @@ class Database:
 
     # trả về toàn bộ thông tin người dùng với username
     def get_profile(self, username):
-        # sql = "SELECT * FROM user_myuser a WHERE a.username ='" + str(username) + "'"
         username = MyUser.objects.filter(username=username)
-        a = []
+        data = []
         for i in username:
             d = model_to_dict(i)
-            print("===============================")
-            print("===============================")
-            print(type(d["avatar"]))
-
-            print("===============================")
-            print("===============================")
-            # d["category"] = model_to_dict(i.category)
-            # d["spending"] = model_to_dict(i.spending)
-            # d["wallet"] = model_to_dict(i.wallet)
-            a.append(d)
-        # get_profile = MyUser.objects.raw(sql)
-        profile = []
-        for i in username:
-            thisdict = {}
-            thisdict["username"] = i.username
-            thisdict["user_id"] = i.id
-            thisdict["email"] = i.email
-            thisdict["avatar"] = str(i.avatar)
-            thisdict["cover_image"] = str(i.cover_image)
-            thisdict["first_name"] = i.first_name
-            thisdict["last_name"] = i.last_name
-            thisdict["full_name"] = i.first_name + " " + i.last_name
-            thisdict["birthday"] = i.birthday
-            thisdict["gender"] = i.gender
-            thisdict["address"] = i.address
-            thisdict["intro"] = i.intro
-            thisdict["date_joined"] = i.date_joined.strftime("%H:%M:%S ngày %m/%d/%Y")
-            thisdict["is_superuser"] = i.is_superuser
-            profile.append(thisdict)
-            print(a)
-            print(profile)
-        return profile
+            d["avatar"] = d["avatar"].name
+            d["cover_image"] = d["cover_image"].name
+            del d['password']
+            data.append(d)
+        return data
 
     # Lấy ra tất cả bài viết của username nhập vào
     def get_profile_posts(self, username, session_user):
         if username != session_user:
-            sql = "SELECT * FROM post_post a JOIN user_myuser b ON a.user_id =  b.id WHERE b.username ='" + str(
-                username) + "'  AND a.public != 'Chỉ Mình Tôi' ORDER BY created_at DESC"
+            x = Post.objects.filter(user__username=username).select_related('user').exclude(
+                public='Chỉ Mình Tôi').order_by('-created_at')
         else:
-            sql = "SELECT * FROM post_post a JOIN user_myuser b ON a.user_id =  b.id WHERE b.username ='" + str(
-                username) + "' ORDER BY created_at DESC"
-        get_profile_posts = Post.objects.raw(sql)
-        profile_posts = []
-        for i in get_profile_posts:
-            thisdict = {}
-            thisdict["post_id"] = i.post
-            thisdict["username"] = i.username
-            thisdict["full_name"] = i.first_name + " " + i.last_name
-            thisdict["feeling"] = i.feeling
-            thisdict["created_at"] = i.created_at.strftime("%H:%M:%S ngày %m/%d/%Y")
-            thisdict["public"] = i.public
-            thisdict["content"] = i.content
-            thisdict["hashtag"] = i.hashtag
-            thisdict["user_id"] = i.user_id
-            thisdict["avatar"] = str(i.avatar)
-            thisdict["photo"] = str(i.photo)
-            profile_posts.append(thisdict)
-        return profile_posts
+            x = Post.objects.filter(user__username=username).order_by('-created_at')
+        data = []
+        for i in x:
+            d = {**model_to_dict(i), **model_to_dict(i.user)}
+            d["photo"] = d["photo"].name
+            d["avatar"] = d["avatar"].name
+            d["created_at"] = i.created_at.strftime("%H:%M:%S ngày %m/%d/%Y")
+            del d['password'], d['cover_image']
+            data.append(d)
+        return data
 
     # Chuyển đổi username thành id
     def username_convert_id(self, username):
@@ -194,50 +154,26 @@ class Database:
     # lấy ra các tài khoản mà username đang theo dõi
     def get_watching(self, username):
         user_id = self.username_convert_id(username)
-        sql = "SELECT * FROM user_myuser a JOIN (SELECT * FROM user_follower WHERE main_user_id = " + str(
-            user_id) + ") b ON a.id = b.followres_id WHERE  a.id !='" + str(user_id) + "'"
-        get_watching = MyUser.objects.raw(sql)
-        profile_watching = []
-        for i in get_watching:
-            thisdict = {}
-            thisdict["avatar"] = str(i.avatar)
-            thisdict["username"] = i.username
-            thisdict["full_name"] = i.first_name + " " + i.last_name
-            thisdict["id"] = i.id
-            profile_watching.append(thisdict)
-        return profile_watching
+        a = Follower.objects.filter(main_user=user_id).values('followres')
+        x = [i["followres"] for i in a]
+        data = MyUser.objects.filter(id__in=x).values('id', 'username', 'avatar', 'first_name', 'last_name')
+        return [i for i in data]
 
     # lấy ra các tài khoản đang theo dõi username (được theo dõi)
     def get_followed(self, username):
         user_id = self.username_convert_id(username)
-        sql = "SELECT * FROM user_myuser a JOIN (SELECT * FROM user_follower WHERE followres_id ='" + str(
-            user_id) + "') b ON a.id = b.main_user_id WHERE  a.id !='" + str(user_id) + "'"
-        get_followed = MyUser.objects.raw(sql)
-        profile_followed = []
-        for i in get_followed:
-            thisdict = {}
-            thisdict["avatar"] = str(i.avatar)
-            thisdict["username"] = i.username
-            thisdict["full_name"] = i.first_name + " " + i.last_name
-            thisdict["id"] = i.id
-            profile_followed.append(thisdict)
-        return profile_followed
+        a = Follower.objects.filter(followres=user_id).values('main_user')
+        x = [i["main_user"] for i in a]
+        data = MyUser.objects.filter(id__in=x).values('id', 'username', 'avatar', 'first_name', 'last_name')
+        return [i for i in data]
 
     # Lấy tất cả người dùng mà tài khoản đăng nhập chưa theo dõi
     def get_all_user(self):
-        sql = "SELECT * FROM user_myuser WHERE id !=" + self.userid + " AND id NOT IN (SELECT followres_id FROM user_follower c WHERE c.main_user_id = " + self.userid + " ) Order by date_joined DESC"
-        get_all_user = MyUser.objects.raw(sql)
-        all_user = []
-        for i in get_all_user:
-            thisdict = {}
-            thisdict["id"] = i.id
-            thisdict["username"] = i.username
-            thisdict["avatar"] = str(i.avatar)
-            thisdict["full_name"] = i.first_name + " " + i.last_name
-            all_user.append(thisdict)
-        return all_user
-
-    # kiểm tra xem đã theo dõi chưa
+        data = Follower.objects.filter(main_user=self.userid).values('followres_id')
+        x = [i["followres_id"] for i in data]
+        data = MyUser.objects.all().exclude(id__in=[int(self.userid)] + x).values('id', 'username', 'avatar',
+                                                                                  'first_name', 'last_name')
+        return [i for i in data]
 
     # kiểm tra xem đã có phòng chat chưa
     def check_box_chat(self, user_1, user_2):

@@ -4,6 +4,7 @@ import re
 from django.contrib.auth import authenticate, login, logout
 
 from django.core.mail import send_mail
+from django.forms import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 import json
@@ -11,8 +12,9 @@ import json
 from django.views import View
 
 from home.models import ShiliEmail, MaHoaOneTimePad, Database
+from post.models import Post
 
-from user.models import MyUser
+from user.models import MyUser, Follower
 from django.core.files import File
 
 
@@ -204,8 +206,17 @@ class Check(View):
 class ApiGetContent(View):
     def post(self, request):
         if request.user.is_authenticated:
-            database = Database(request.user.id)
-            get_post_index = database.json_post(database.get_post_index())
-            return JsonResponse({'result': get_post_index})
+            a = Follower.objects.filter(main_user=int(request.user.id)).values('followres')
+            x = [i["followres"] for i in a] + [request.user.id]
+            x = Post.objects.filter(user__id__in=x).exclude(public="Chỉ Mình Tôi").order_by('-created_at')
+            data = []
+            for i in x:
+                d = {**model_to_dict(i), **model_to_dict(i.user)}
+                d["photo"] = d["photo"].name
+                d["avatar"] = d["avatar"].name
+                d["created_at"] = i.created_at.strftime("%H:%M:%S ngày %m/%d/%Y")
+                del d['password'], d['cover_image']
+                data.append(d)
+            return JsonResponse({'result': data})
         else:
             return redirect('home:home')

@@ -17,24 +17,24 @@
                          alt="">
                     <div>
                         <div>
-                            <a class="post_name" :href="domain+`/profile/${item.username}`">[[item.full_name]]</a>
+                            <a class="post_name" :href="domain+`/profile/${item.username}`">[[item.first_name + " " +item.last_name]]</a>
                             <label class="post_feeling"><i
                                     class="fas fa-check-circle"></i> [[item.feeling]]</label>
                         </div>
                         <div>
-                            <a class="post_time" :href="domain+`/post/${item.post_id}/`">[[item.created_at]]</a>
+                            <a class="post_time" :href="domain+`/post/${item.post}/`">[[item.created_at]]</a>
                             <label class="post_public"><i
                                     class="fas fa-globe-europe"> </i> [[item.public]]</label>
                         </div>
                     </div>
-                    <div class="dropdown" v-if="user_id == item.user_id">
+                    <div class="dropdown" v-if="user_id == item.user">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
                                 data-bs-toggle="dropdown" aria-expanded="false">
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end  dropdown-menu-dark "
                             aria-labelledby="dropdownMenuButton">
-                            <li @click="open_link(domain+`/post/edit/${item.post_id}/`)">Chỉnh sửa bài viết</li>
-                            <li @click="delete_post(item.post_id)">Xóa bài viết này</li>
+                            <li @click="open_link(domain+`/post/edit/${item.post}/`)">Chỉnh sửa bài viết</li>
+                            <li @click="delete_post(item.post)">Xóa bài viết này</li>
                         </ul>
                     </div>
                 </div>
@@ -44,20 +44,20 @@
                 <img v-if="item.photo" :src="`/media/${item.photo}`" class="post_image"
                      :alt="item.photo" alt="">
                 <input type="text" v-model="comment.content_input"
-                       @keyup.enter="comment_func(item.post_id)"
+                       @keyup.enter="comment_func(item.post)"
                        class="col-12 px-4 py-2 cmt_input"
                        placeholder="Để lại bình luận của bạn">
                 <div class="comment container row p-2 my-3 mx-3 col-11" v-for="key in comment.comment_show.result"
-                     v-if="key.post_id == item.post_id" :key="key.comment_id">
+                     v-if="key.post_id == item.post" :key="key.comment_id">
                     <div class="col-12">
                         <a class="comment_name" :href="domain + `/profile/${ key.username}`">[[key.fullname]]</a>
                         <small class="mx-3"><i class="far fa-clock"></i> [[key.created_at]]</small>
-                        <i v-if="user_id == key.user_id " @click="comment_delete_func(item.post_id,key.comment_id)"
+                        <i v-if="user_id == key.user_id " @click="comment_delete_func(item.post,key.comment_id)"
                            class="fas fa-trash-alt remove_cmt"></i>
                     </div>
                     <div class="col-12 content_cmt">[[key.content]]</div>
                 </div>
-                <div class="show_cmt mt-3 mx-3 col-12" @click="comment_show_func(item.post_id)"><i
+                <div class="show_cmt mt-3 mx-3 col-12" @click="comment_show_func(item.post)"><i
                         class="fas fa-share"></i>
                     Hiển thị bình luận
                 </div>
