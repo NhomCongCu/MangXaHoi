@@ -74,8 +74,8 @@ let home = new Vue({
                 this.api_hashtag_post_func();
                 break;
             case 'profile':
-                setTimeout(() => this.get_profile_func(), 0)
-                setInterval(() => this.get_profile_func(), 500)
+                // setTimeout(() => this.get_profile_func(), 0)
+                // setInterval(() => this.get_profile_func(), 500)
                 break;
             case 'all_user':
                 setTimeout(() => this.api_get_all_user_func(), 0)

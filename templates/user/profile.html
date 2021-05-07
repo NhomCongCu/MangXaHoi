@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
 {% block noidung %}
     <div id="profile">
-        <template v-for="profile in get_profile.profile" >
+        <template v-for="profile in get_profile.profile">
             <div v-if="profile.cover_image" class="backgroundProfile"
                  :style="{ 'background-image': [`url(/media/${profile.cover_image}`]}"></div>
             <div v-else class="backgroundProfile"></div>
@@ -156,51 +156,53 @@
             {% if username ==  user.username %}
                 <template v-if="themes==='suathongtin'">
                     <div class="user_follow">
-                        {% csrf_token %}
-                        <div class="user_thongtin_edit">
-                            <i class="fas fa-signature"></i>
-                            <input type="text" id="first_name"
-                                   v-model="edit.first_name=profile.first_name">
-                        </div>
-                        <div class="user_thongtin_edit">
-                            <i class="fas fa-signature"></i>
-                            <input type="text" id="last_name"
-                                   v-model="edit.last_name=profile.last_name">
-                        </div>
-                        <div class="user_thongtin_edit">
-                            <i class="fab fa-playstation"></i>
-                            <input type="text" id="intro" v-model="edit.intro=profile.intro">
-                        </div>
-                        <div class="user_thongtin_edit">
-                            <i class="fas fa-map-marked"></i>
-                            <input type="text" id="address" v-model="edit.address=profile.address">
-                        </div>
-                        <div class="user_thongtin_edit">
-                            <i class="fas fa-envelope"></i>
-                            <input type="email" id="email" v-model="edit.email=profile.email">
-                        </div>
+                        <form class="m-3" action="{% url 'user:edit_profile' %}" enctype="multipart/form-data" method="post">
+                            {% csrf_token %}
 
-                        <div class="user_thongtin_edit">
-                            <i class="fas fa-venus-mars"></i>
-                            <select v-model="edit.gender=profile.gender">
-                                <option disabled value="">Giới tính</option>
-                                <option>Nam</option>
-                                <option>Nữ</option>
-                            </select>
-                        </div>
-                        <div class="user_thongtin_edit">
-                            <i class="fas fa-birthday-cake"></i>
-                            <input type="date" v-model="edit.birthday=profile.birthday">
-                        </div>
+                            <div class="user_thongtin_edit">
+                                <i class="fas fa-signature"></i>
+                                <input type="text" name="first_name" value="{{ user.first_name }}">
+                            </div>
+                            <div class="user_thongtin_edit">
+                                <i class="fas fa-signature"></i>
+                                <input type="text" name="last_name" value="{{ user.last_name }}">
+                            </div>
+                            <div class="user_thongtin_edit">
+                                <i class="fab fa-playstation"></i>
+                                <input type="text" name="intro" value="{{ user.intro }}">
+                            </div>
+                            <div class="user_thongtin_edit">
+                                <i class="fas fa-map-marked"></i>
+                                <input type="text" name="address" value="{{ user.address }}">
+                            </div>
+                            <div class="user_thongtin_edit">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" name="email" value="{{ user.email }}">
+                            </div>
 
-                        <div class="container mt-3 btnEdit">
-                            <button @click="forgotPass_func(profile.email)" type="button" class="btn btn-secondary"><i
-                                    class="far fa-edit"></i> Đổi mật khẩu
-                            </button>
-                            <button @click="edit_profile" type="button" class="btn btn-secondary"><i
-                                    class="fas fa-save"></i> Lưu thay đổi
-                            </button>
-                        </div>
+                            <div class="user_thongtin_edit">
+                                <i class="fas fa-venus-mars"></i>
+                                <select name="gender">
+                                    <option>{{ user.gender }}</option>
+                                    <option>Nam</option>
+                                    <option>Nữ</option>
+                                </select>
+                            </div>
+                            <div class="user_thongtin_edit">
+                                <i class="fas fa-birthday-cake"></i>
+                                <input type="date" name="birthday" value="{{ user.birthday |date:"Y-m-d" }}">
+                            </div>
+                            <div class="container mt-3 btnEdit">
+                                <button @click="forgotPass_func(profile.email)" type="button" class="btn btn-secondary">
+                                    <i
+                                            class="far fa-edit"></i> Đổi mật khẩu
+                                </button>
+                                <button type="submit" class="btn btn-secondary"><i
+                                        class="fas fa-save"></i> Lưu thay đổi
+                                </button>
+                            </div>
+                        </form>
+
                     </div>
                 </template>
                 <template v-if="themes==='editCoverImage'">

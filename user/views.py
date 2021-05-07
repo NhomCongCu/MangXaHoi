@@ -46,24 +46,32 @@ class ApiGetProfile(View):
 class ApiEditProfile(View):
     def post(self, request):
         if request.user.is_authenticated:
-            data = json.loads(request.body.decode('utf-8'))
+
             edit_user = MyUser.objects.get(id=request.user.id)
-            if data['first_name'] != '' and data['last_name'] != '':
-                edit_user.first_name = data['first_name']
-                edit_user.last_name = data['last_name']
-            if data['address'] != '':
-                edit_user.address = data['address']
-            if data['email'] != '':
-                edit_user.email = data['email']
-            if data['gender'] != edit_user.gender:
-                edit_user.gender = data['gender']
-            if data['birthday'] != edit_user.birthday:
-                edit_user.birthday = data['birthday']
-            edit_user.intro = data['intro']
+
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            address = request.POST.get('address')
+            email = request.POST.get('email')
+            gender = request.POST.get('gender')
+            birthday = request.POST.get('birthday')
+            intro = request.POST.get('intro')
+            if first_name != '' and last_name != '':
+                edit_user.first_name = first_name
+                edit_user.last_name = last_name
+            if address != '':
+                edit_user.address = address
+            if email != '':
+                edit_user.email = email
+            if gender != edit_user.gender:
+                edit_user.gender = gender
+            if birthday != edit_user.birthday:
+                edit_user.birthday = birthday
+            edit_user.intro = intro
             edit_user.save()
-            return HttpResponse("Bạn đã thay đổi thông tin thành công.")
+            return redirect('user:profile_main')
         else:
-            return HttpResponse('Phiên đăng nhập của bạn đã hết hạn vui lòng đăng nhập lại')
+            return redirect('home:home')
 
 
 class Edit_av_bg(View):
