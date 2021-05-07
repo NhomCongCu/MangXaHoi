@@ -113,7 +113,7 @@ class Xac_thuc(View):
     def post(self, request):
         data = json.loads(request.body.decode('utf-8'))
         email = data['email']
-        if MyUser.objects.filter(email=email).exists():
+        if MyUser.objects.filter(email=email):
             one_time_pad = MaHoaOneTimePad()
             result = one_time_pad.ma_hoa(email)
             mail_content = "Hello"
