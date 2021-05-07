@@ -13,13 +13,13 @@ from django.views import View
 from home.models import ShiliEmail, MaHoaOneTimePad, Database
 
 from user.models import MyUser
+from django.core.files import File
 
 
 class Index(View):
     def get(self, request):
         if request.user.is_authenticated:
-            # with open(os.path.join(PROJECT_ROOT, 'filename')) as f:
-            #     print(f)
+
             database = Database(request.user.id)
             kt = database.get_watching(request.user.username)
             if kt:
@@ -45,7 +45,8 @@ class Login_user(View):
                 login(request, user)
                 return HttpResponse('success')
             else:
-                return HttpResponse('Thông tin đăng nhập không chính xác hoặc tài khoản này chưa được kích hoạt. Vui lòng kiểm tra lại')
+                return HttpResponse(
+                    'Thông tin đăng nhập không chính xác hoặc tài khoản này chưa được kích hoạt. Vui lòng kiểm tra lại')
             # try:
             #     user = authenticate(username=MyUser.objects.get(email=username), password=password)
             # except:
@@ -83,7 +84,7 @@ class Register_user(View):
                 result = one_time_pad.ma_hoa(email)
                 domain = request.scheme + '://' + request.META['HTTP_HOST']
                 url = domain + '/xacthuc/' + result[0] + '/' + result[1]
-                content = "Nhấp vào đây để Xác thực tài khoản của bạn"
+                content = "We're excited to have you get started. First, you need to confirm your account. Just press the button below."
                 theme = ShiliEmail()
                 msg_html = theme.form_mail(url, content, email)
                 send_mail(mail_title, mail_content, "PLC", [email], html_message=msg_html, fail_silently=False)
@@ -104,9 +105,9 @@ class Send_pass(View):
             mail_title = "Shili! Đặt lại mật khẩu"
             domain = request.scheme + '://' + request.META['HTTP_HOST']
             url = domain + '/resetpassword/' + result[0] + '/' + result[1]
-            content = "Nhấp  vào đây để đặt lại mật khẩu  của bạn"
+            content = "If did not make this request, just ignore this  email. Otherwise, please click the button below to change your password:"
             theme = ShiliEmail()
-            msg_html = theme.form_mail(url, content, email)
+            msg_html = theme.form_mail(url, content, email, 'xacthuc')
             send_mail(mail_title, mail_content, "PLC", [email], html_message=msg_html, fail_silently=False)
             return HttpResponse('Kiểm tra email để lấy liên kết đến trang thay đổi mật khẩu')
         return HttpResponse('Email này không tồn tại trong hệ thống,vui lòng kiểm tra lại')
@@ -123,7 +124,7 @@ class Xac_thuc(View):
             mail_title = "Shili! Xác thực tài khoản"
             domain = request.scheme + '://' + request.META['HTTP_HOST']
             url = domain + '/xacthuc/' + result[0] + '/' + result[1]
-            content = "Nhấp  vào đây để xác thực tài khoản"
+            content = "We're excited to have you get started. First, you need to confirm your account. Just press the button below."
             theme = ShiliEmail()
             msg_html = theme.form_mail(url, content, email)
             send_mail(mail_title, mail_content, "PLC", [email], html_message=msg_html, fail_silently=False)

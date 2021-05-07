@@ -1,3 +1,4 @@
+import os
 import random
 
 from django.forms import model_to_dict
@@ -7,100 +8,19 @@ from user.models import MyUser, Conversation, Message, Follower
 
 
 class ShiliEmail:
-    def form_mail(self, url, content, email):
-        
+    def form_mail(self, url, content,email ,type='welcome'):
+        module_dir = os.path.dirname(__file__)
+        if type == 'welcome':
+            file_path = os.path.join(module_dir, 'stactic\\mail\\welcome.html')
+        else:
+            file_path = os.path.join(module_dir, 'stactic\\mail\\xacthuc.html')
 
-
-
-
-
-
-        form_mail = """
-       <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                #index_login {
-                    background-color: #5B7D87;
-                    background-image: -webkit-linear-gradient(45deg, #91B3BC 50%, #5B7D87 50%);
-                    height: 100%;
-                    z-index: 0;
-                    padding: 50px;
-                    padding-top:0;
-                }
-        
-                .btn-grad {
-                    background-image: linear-gradient(to right, #FF512F 0%, #F09819 51%, #FF512F 100%);
-                }
-        
-                .btn-grad {
-                    margin: 20px auto;
-                    padding: 15px 45px;
-                    text-align: center;
-                    text-transform: uppercase;
-                    transition: 0.5s;
-                    background-size: 200% auto;
-                    color: #070000;
-                    box-shadow: 0 0 10px #eee;
-                    border-radius: 10px;
-                    display: block;
-                    font-weight: bold;
-                }
-        
-                .btn-grad:hover {
-                    background-position: right center;
-                    color: #efefef;
-                   
-                }
-        
-                .welcome h1 {
-                    font-family: "Segoe UI", serif;
-                    font-style: italic;
-                    font-size: 100px;
-                    color: #FFFFFF;
-                    font-weight: bold;
-                }
-        
-                .welcome h2, .welcome a {
-                    font-family: "Segoe UI", serif;
-                    font-style: italic;
-                    font-size: 35px;
-                    color: #FFFFFF;
-                    font-weight: bold;
-                    text-decoration: none;
-                }
-        
-                .welcome p {
-                    text-align: right;
-                    font-family: "Consolas", serif;
-                    font-size: 35px;
-                    color: #FFFFFF
-                }
-        
-                h1 span {
-                    font-family: 'Berkshire Swash', cursive;
-                    font-weight: bold;
-                    color: #F18E16;
-                    font-size: 150px;
-                    text-transform: capitalize;
-                    font-style: normal;
-                }
-            </style>
-        </head>
-        <body>
-        <div id="index_login">
-            <div class="welcome ">
-                <h1 class="col-12">WELCOME TO <span>Shili</span></h1>
-                <p class="col-12">Bắt trọn khoảnh khắc - Dẫn dắt xu hướng </p>
-                <h2> Xin chào """ + email + """</h2>
-                <a class="btn-grad" href=" """ + url + """ " >""" + content + """</a>
-            </div>
-        </div>
-        </body>
-             """
-        return form_mail
+        with open(file_path, "r", encoding='utf-8') as f:
+            data = f.read()
+        data = data.replace('@@@content@@@', content)
+        data = data.replace('@@@link@@@', url)
+        data = data.replace('@@@mail@@@', email)
+        return data
 
 
 class MaHoaOneTimePad:
@@ -328,7 +248,6 @@ class Database:
         return all_user
 
     # kiểm tra xem đã theo dõi chưa
-
 
     # kiểm tra xem đã có phòng chat chưa
     def check_box_chat(self, user_1, user_2):
