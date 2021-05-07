@@ -168,24 +168,7 @@ let home = new Vue({
         scrollToTop() {
             window.scrollTo(0, 0);
         },
-        edit_profile: function () {
-            axios({
-                method: 'post',
-                url: '/profile/api/editprofile/',
-                data: {
-                    first_name: this.edit.first_name,
-                    last_name: this.edit.last_name,
-                    intro: this.edit.intro,
-                    email: this.edit.email,
-                    address: this.edit.address,
-                    gender: this.edit.gender,
-                    birthday: this.edit.birthday,
-                },
-            }).then(response => {
-                this.get_profile_func();
-                this.thongBao.push(response.data)
-            })
-        },
+
         forgotPass_func: function (email) {
             if (email === this.email) {
                 axios({
