@@ -1,4 +1,5 @@
 from django.db.models import Count
+from django.forms import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 import json
@@ -18,10 +19,10 @@ class ShowPost(View):
 
     def post(self, request, post_id):
         if request.user.is_authenticated:
-            database = Database(request.user.id)
-            get_post_id = database.get_post_id(post_id)
-            posts = database.json_post(get_post_id)
-            return JsonResponse({'result': posts})
+            x = Post.objects.filter(post=post_id)
+            db = Database()
+            out = db.convert_post(x)
+            return JsonResponse({'result': out})
         else:
             return redirect('home:login')
 
@@ -35,9 +36,11 @@ class TopHashtagPost(View):
 
     def post(self, request):
         if request.user.is_authenticated:
-            database = Database(request.user.id)
-            get_post_in_top_x_hashtag = database.get_post_in_top_x_hashtag(str(3))
-            posts = database.json_post(get_post_in_top_x_hashtag)
+            database = Database()
+            x = list(Post.objects.all().values('hashtag').annotate(soluot=Count('hashtag')).order_by('-soluot'))[:3]
+            list_ht = [i["hashtag"] for i in x]
+            posts = Post.objects.filter(hashtag__in=list_ht).order_by('-created_at')
+            posts = database.convert_post(posts)
             return JsonResponse({'result': posts})
         else:
             return redirect('home:login')
@@ -65,9 +68,7 @@ class SetPost(View):
             new_post.public = public
             new_post.user = request.user
             new_post.save()
-            database = Database(request.user.id)
-            post_id = database.get_id_new_post()
-            return redirect('post:ShowPost', post_id)
+            return redirect('post:ShowPost', new_post.post)
 
 
 class EditPost(View):
@@ -118,9 +119,9 @@ class ApiHashtag(View):
 
     def post(self, request, hashtag):
         if request.user.is_authenticated:
-            database = Database(request.user.id)
-            get_post_hashtag = database.get_post_hashtag(hashtag.upper())
-            posts = database.json_post(get_post_hashtag)
+            posts = Post.objects.filter(hashtag=hashtag.upper()).order_by('-created_at')
+            database = Database()
+            posts = database.convert_post(posts)
             return JsonResponse({'result': posts})
         else:
             return redirect('home:login')
@@ -148,10 +149,14 @@ class Comment_post(View):
                 return HttpResponse('bình luận thành công, hãy tiếp tục tương tác nhé')
         except:
             pass
-        database = Database(request.user.id)
-        get_comment_post_id = database.get_comment_post_id(data['post_id'])
-        return JsonResponse({'result': get_comment_post_id})
-
+        z = Comment.objects.filter(post=data['post_id'])
+        comments = []
+        for i in z:
+            d = model_to_dict(i.user)
+            del d['password'], d['cover_image'], d['avatar'], d['email'], d['date_joined']
+            out = {**model_to_dict(i), **d, "created_at": i.created_at.strftime("%H:%M:%S ngày %m/%d/%Y")}
+            comments.append(out)
+        return JsonResponse({'result': comments})
 
 
 class Delete_comment(View):

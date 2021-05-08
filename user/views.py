@@ -31,7 +31,7 @@ class ApiGetProfile(View):
     def post(self, request):
         if request.user.is_authenticated:
             data = json.loads(request.body.decode('utf-8'))
-            database = Database(request.user.id)
+            database = Database()
             profile = database.get_profile(data['username'])
             profile_posts = database.get_profile_posts(data['username'], request.user.username)
             profile_watching = database.get_watching(data['username'])
@@ -121,8 +121,10 @@ class AllUser(View):
 
     def post(self, request):
         if request.user.is_authenticated:
-            database = Database(request.user.id)
-            all_user = database.get_all_user()
+            data = Follower.objects.filter(main_user=request.user).values('followres_id')
+            x = [i["followres_id"] for i in data]
+            all_user = MyUser.objects.all().exclude(id__in=[request.user.id] + x).values('id', 'username', 'avatar', 'first_name', 'last_name')
+            all_user = [i for i in all_user]
             return JsonResponse({'result': all_user})
         else:
             return redirect('home:home')
@@ -131,7 +133,7 @@ class AllUser(View):
 class ApiYourFriend(View):
     def post(self, request):
         if request.user.is_authenticated:
-            database = Database(request.user.id)
+            database = Database()
             profile_watching = database.get_watching(request.user.username)
             return JsonResponse({'result': profile_watching})
         else:

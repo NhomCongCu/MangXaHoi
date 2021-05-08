@@ -21,14 +21,12 @@ from django.core.files import File
 class Index(View):
     def get(self, request):
         if request.user.is_authenticated:
-
-            database = Database(request.user.id)
+            database = Database()
             kt = database.get_watching(request.user.username)
             if kt:
                 return render(request, 'home/home.html', {'page': 'Trang chủ Shili'})
             else:
                 return render(request, 'user/all_user.html', {'page': 'all_user'})
-
         else:
             return render(request, 'home/index.html')
 
@@ -209,14 +207,8 @@ class ApiGetContent(View):
             a = Follower.objects.filter(main_user=int(request.user.id)).values('followres')
             x = [i["followres"] for i in a] + [request.user.id]
             x = Post.objects.filter(user__id__in=x).exclude(public="Chỉ Mình Tôi").order_by('-created_at')
-            data = []
-            for i in x:
-                d = {**model_to_dict(i), **model_to_dict(i.user)}
-                d["photo"] = d["photo"].name
-                d["avatar"] = d["avatar"].name
-                d["created_at"] = i.created_at.strftime("%H:%M:%S ngày %m/%d/%Y")
-                del d['password'], d['cover_image']
-                data.append(d)
-            return JsonResponse({'result': data})
+            db = Database()
+            out = db.convert_post(x)
+            return JsonResponse({'result': out})
         else:
             return redirect('home:home')

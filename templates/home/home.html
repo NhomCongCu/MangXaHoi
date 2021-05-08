@@ -17,7 +17,8 @@
                          alt="">
                     <div>
                         <div>
-                            <a class="post_name" :href="domain+`/profile/${item.username}`">[[item.first_name + " " +item.last_name]]</a>
+                            <a class="post_name" :href="domain+`/profile/${item.username}`">[[item.first_name + " "
+                                +item.last_name]]</a>
                             <label class="post_feeling"><i
                                     class="fas fa-check-circle"></i> [[item.feeling]]</label>
                         </div>
@@ -48,11 +49,12 @@
                        class="col-12 px-4 py-2 cmt_input"
                        placeholder="Để lại bình luận của bạn">
                 <div class="comment container row p-2 my-3 mx-3 col-11" v-for="key in comment.comment_show.result"
-                     v-if="key.post_id == item.post" :key="key.comment_id">
+                     v-if="key.post == item.post" :key="key.comment">
                     <div class="col-12">
-                        <a class="comment_name" :href="domain + `/profile/${ key.username}`">[[key.fullname]]</a>
+                        <a class="comment_name" :href="domain + `/profile/${ key.username}`">[[item.first_name + " "
+                            +item.last_name]]</a>
                         <small class="mx-3"><i class="far fa-clock"></i> [[key.created_at]]</small>
-                        <i v-if="user_id == key.user_id " @click="comment_delete_func(item.post,key.comment_id)"
+                        <i v-if="user_id == key.id " @click="comment_delete_func(item.post,key.comment)"
                            class="fas fa-trash-alt remove_cmt"></i>
                     </div>
                     <div class="col-12 content_cmt">[[key.content]]</div>
@@ -63,12 +65,18 @@
                 </div>
             </div>
         </template>
-        <h5 v-if="!post_id" style="color:#f5f5f5;">Hi {{ user.last_name }} ! Không còn bài viết nào khác hãy theo dõi mọi người để tiếp
+        <h5 v-if="!post_id" style="color:#f5f5f5;">Hi {{ user.last_name }} ! Không còn bài viết nào khác hãy theo dõi
+            mọi người để tiếp
             cận thêm nhiều bài viết nữa</h5>
     </template>
     <template v-else>
         <div class="user_follow">
-            <h2>Không tồn tại bài viết này</h2>
+            <h3>Hi {{ user.last_name }}, có vẻ như dữ liệu mà bạn yêu cầu đã không còn tồn tại nữa. </h3>
+            <hr>
+            <a style="text-align: center" href="{% url 'home:home' %}">
+                <h5><i class="fas fa-home "></i>&ensp; Trở lại trang chính</h5>
+            </a>
+            <hr>
         </div>
     </template>
 

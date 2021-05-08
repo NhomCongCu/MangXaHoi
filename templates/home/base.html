@@ -86,7 +86,7 @@
                                     <img v-else src="{% static 'user/images/avatar.png' %}" alt="avatar"
                                          class="col-3 p-0">
                                     <div class="col-9 textOver ">
-                                        <h5 class="col-12">[[item.full_name]]</h5>
+                                        <h5 class="col-12">[[item.first_name + " " +item.last_name]]</h5>
                                         <h6 class="col-12">@[[item.username]]</h6>
                                     </div>
                                 </div>
@@ -100,7 +100,7 @@
                                              alt="avatar" class="col-3 p-0">
                                         <div class="col-9 row">
                                             <a class="col-12"
-                                               :href="domain+`/profile/${item.username}`">[[item.full_name]]</a>
+                                               :href="domain+`/profile/${item.username}`">[[item.first_name + " " +item.last_name]]</a>
                                             <span>Có [[item.count_mess]] Tin nhắn trong hội thoại này</span>
                                         </div>
                                         <i @click="show_box_chat" class="fas fa-arrow-circle-left col-1"></i>
@@ -121,7 +121,7 @@
                                     </div>
                                     <div class="chat_input_group">
                                         <input type="text" @click="scrollBottom()" @input="scrollBottom()"
-                                               @keyup.enter="send_mess_func(item.user_id)"
+                                               @keyup.enter="send_mess_func(item.id)"
                                                v-model="chat.input" class="chat_input"
                                                placeholder="Nhập tin nhắn muốn gửi...">
                                     </div>
