@@ -207,8 +207,7 @@ class ApiGetContent(View):
             a = Follower.objects.filter(main_user=int(request.user.id)).values('followres')
             x = [i["followres"] for i in a] + [request.user.id]
             x = Post.objects.filter(user__id__in=x).exclude(public="Chỉ Mình Tôi").order_by('-created_at')
-            db = Database()
-            out = db.convert_post(x)
+            out = Database().convert_post(x)
             return JsonResponse({'result': out})
         else:
             return redirect('home:home')
