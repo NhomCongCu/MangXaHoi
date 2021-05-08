@@ -123,11 +123,12 @@ USE_L10N = True
 # deploy
 STATIC_URL = "/staticfiles/"
 STATIC_ROOT = os.path.join(BASE_DIR, '/staticfiles/')
-# STATICFILES_DIRS = (
 
-#     BASE_DIR / "static",
-#     '/static/',
-# )
+STATICFILES_DIRS = (
+
+    BASE_DIR / "static",
+    '/static/',
+)
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -138,7 +139,7 @@ EMAIL_USE_TLS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'smpasoftware@gmail.com'
-EMAIL_HOST_PASSWORD = '0349923955a'
+EMAIL_HOST_PASSWORD = '0349923955aA'
 EMAIL_PORT = 587
 django_heroku.settings(locals())
 
