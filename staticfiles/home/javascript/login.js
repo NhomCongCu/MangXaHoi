@@ -6,7 +6,7 @@ let index_login = new Vue({
     data: {
         regEX: /^[a-z0-9_-]{3,16}$/,
         login_bg: false,
-        themes: 'login',
+        themes: '',
         domain: window.location.origin,
         login: {
             username: null,
@@ -20,10 +20,7 @@ let index_login = new Vue({
             password2: null,
             check: false
         },
-        activate: {
-            email: null,
-            result: null,
-        },
+
         sign_up: {
             firstname: null,
             lastname: null,
@@ -32,7 +29,7 @@ let index_login = new Vue({
             password1: null,
             password2: null,
             birthday: null,
-            gender: null,
+            gender: 'Nam',
             checkUserName: null,
             checkEmail: null,
             checkPassword: null,
@@ -43,11 +40,20 @@ let index_login = new Vue({
 
     },
     created: function () {
+        try {
+            this.themes = document.getElementById("themes").innerHTML;
+            if (this.themes) {
+                this.login_bg = true;
+            }
+        } catch (err) {
+        }
+
         axios({
             url: this.domain + '/static/home/Json/login_page.json',
         }).then(response => {
             this.intro = response.data.intro
             this.thong_bao = response.data.thong_bao
+
 
         })
     },
@@ -77,36 +83,7 @@ let index_login = new Vue({
 
 
         },
-        forgotPass_func: function () {
-            if (/\S+@\S+\.\S+/.test(this.password.email)) {
-                axios({
-                    method: 'post',
-                    url: this.domain + '/sendpass/',
-                    data: {
-                        email: this.password.email,
-                    },
-                }).then(response => {
-                    this.password.result = response.data;
-                })
-            } else {
-                this.password.result = this.thong_bao.sai_email
-            }
-        },
-        activate_func: function () {
-            if (/\S+@\S+\.\S+/.test(this.activate.email)) {
-                axios({
-                    method: 'post',
-                    url: this.domain + '/xacthuc/',
-                    data: {
-                        email: this.activate.email,
-                    },
-                }).then(response => {
-                    this.activate.result = response.data;
-                })
-            } else {
-                this.activate.result = this.thong_bao.sai_email
-            }
-        },
+
         check__: function () {
             axios({
                 method: 'post',
@@ -118,6 +95,12 @@ let index_login = new Vue({
             }).then(response => {
                 this.sign_up.result = response.data;
             })
+        },
+
+        chuyen: function (x) {
+            this.themes = 1;
+          setTimeout(() => {  this.themes = x }, 500);
+
         },
 
         checkUserName_func: function () {
