@@ -230,8 +230,8 @@
                 </template>
             {% endif %}
             <div class="user_follow" v-if="themes==='profile'">
-                <template v-if="get_profile.profile_posts.length">
-                    <template v-for="item in get_profile.profile_posts">
+                <template v-if="get_profile.profile_posts && get_profile.profile_posts.length">
+                    <template v-for="(item,i) in get_profile.profile_posts">
                         <div class="baidang mb-5">
                             <div class="post_thongtin">
                                 <img v-if="item.avatar" :src="`/media/${item.avatar}`" class="post_avatar"
@@ -240,31 +240,29 @@
                                      alt="">
                                 <div>
                                     <div>
-                                        <a class="post_name" :href="domain+`/profile/${item.username}`">[[item.first_name+" "+item.last_name]]</a>
+                                        <a class="post_name" :href="domain+`/profile/${item.username}`">[[item.first_name
+                                            + " "
+                                            +item.last_name]]</a>
                                         <label class="post_feeling"><i
                                                 class="fas fa-check-circle"></i> [[item.feeling]]</label>
                                     </div>
                                     <div>
                                         <a class="post_time"
-                                           :href="domain+`/post/${item.post_id}/`">[[item.created_at]]</a>
-
+                                           :href="domain+`/post/${item.post}/`">[[item.created_at]]</a>
                                         <label class="post_public"><i
                                                 class="fas fa-globe-europe"> </i> [[item.public]]</label>
                                     </div>
                                 </div>
-                                <div class="dropdown" v-if="user_id == item.user_id">
+                                <div class="dropdown" v-if="user_id == item.user">
                                     <button class="btn btn-secondary dropdown-toggle" type="button"
                                             id="dropdownMenuButton"
                                             data-bs-toggle="dropdown" aria-expanded="false">
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end  dropdown-menu-dark "
                                         aria-labelledby="dropdownMenuButton">
-                                        <li @click="open_link(domain+`/post/edit/${item.post_id}/`)"><a
-                                                class="dropdown-item" href="#">Chỉnh
-                                            sửa bài viết</a></li>
-                                        <li @click="delete_post(item.post_id)"><a class="dropdown-item" href="#">Xóa bài
-                                            viết này</a>
+                                        <li @click="open_link(domain+`/post/edit/${item.post}/`)">Chỉnh sửa bài viết
                                         </li>
+                                        <li @click="delete_post(item.post)">Xóa bài viết này</li>
                                     </ul>
                                 </div>
                             </div>
@@ -273,23 +271,22 @@
                                 <i class="fas fa-hashtag"></i>[[item.hashtag]]</a>
                             <img v-if="item.photo" :src="`/media/${item.photo}`" class="post_image"
                                  :alt="item.photo" alt="">
-                            <input type="text" v-model="comment.content_input"
-                                   @keyup.enter="comment_func(item.post_id)"
+                            <input type="text" v-model="comment[i]"
+                                   @keyup.enter="comment_func(item.post,i)"
                                    class="col-12 px-4 py-2 cmt_input"
                                    placeholder="Để lại bình luận của bạn">
-                            <div class="comment container row p-2 my-3 mx-3 col-11"
-                                 v-for="key in comment.comment_show.result"
-                                 v-if="key.post_id == item.post_id" :key="key.comment_id">
+                            <div class="comment container row p-2 my-3 mx-3 col-11" v-for="key in item.comments"
+                                 :key="key.comment">
                                 <div class="col-12">
-                                    <a class="comment_name" :href="domain + `/profile/${ key.username}`">[[key.fullname]]</a>
+                                    <a class="comment_name" :href="domain + `/profile/${ key.username}`">
+                                        [[key.first_name + " " +key.last_name]]</a>
                                     <small class="mx-3"><i class="far fa-clock"></i> [[key.created_at]]</small>
-                                    <i v-if="user_id == key.user_id "
-                                       @click="comment_delete_func(item.post_id,key.comment_id)"
+                                    <i v-if="user_id == key.id " @click="comment_delete_func(item.post,key.comment,i)"
                                        class="fas fa-trash-alt remove_cmt"></i>
                                 </div>
                                 <div class="col-12 content_cmt">[[key.content]]</div>
                             </div>
-                            <div class="show_cmt mt-3 mx-3 col-12" @click="comment_show_func(item.post_id)"><i
+                            <div class="show_cmt mt-3 mx-3 col-12" @click="comment_show_func(item.post,i)"><i
                                     class="fas fa-share"></i>
                                 Hiển thị bình luận
                             </div>

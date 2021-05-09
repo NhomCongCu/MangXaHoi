@@ -58,9 +58,9 @@ class Database:
             d["avatar"] = d["avatar"].name
             d["created_at"] = i.created_at.strftime("%H:%M:%S ngày %m/%d/%Y")
             del d['password'], d['cover_image']
+            d["comments"] = False
             out.append(d)
         return out
-
 
     # kiểm tra xem đã có phòng chat chưa
     def check_box_chat(self, user_1, user_2):
@@ -72,7 +72,6 @@ class Database:
             return model_to_dict(y[0])["c_id"]
         else:
             return False
-
 
     # trả về toàn bộ thông tin người dùng với username
     def get_profile(self, username):
@@ -93,14 +92,8 @@ class Database:
                 public='Chỉ Mình Tôi').order_by('-created_at')
         else:
             x = Post.objects.filter(user__username=username).order_by('-created_at')
-        data = []
-        for i in x:
-            d = {**model_to_dict(i), **model_to_dict(i.user)}
-            d["photo"] = d["photo"].name
-            d["avatar"] = d["avatar"].name
-            d["created_at"] = i.created_at.strftime("%H:%M:%S ngày %m/%d/%Y")
-            del d['password'], d['cover_image']
-            data.append(d)
+        data = self.convert_post(x)
+
         return data
 
     # lấy ra các tài khoản mà username đang theo dõi
@@ -111,6 +104,13 @@ class Database:
         data = MyUser.objects.filter(id__in=x).values('id', 'username', 'avatar', 'first_name', 'last_name')
         return [i for i in data]
 
+    def get_watching1(self, username):
+        user_id = MyUser.objects.get(username=username).id
+        a = Follower.objects.filter(main_user=user_id).values('followres')
+        x = [i["followres"] for i in a]
+        data = MyUser.objects.filter(id__in=x).values('id', 'username', 'avatar', 'first_name', 'last_name')
+        return data
+
     # lấy ra các tài khoản đang theo dõi username (được theo dõi)
     def get_followed(self, username):
         user_id = MyUser.objects.get(username=username).id
@@ -118,4 +118,3 @@ class Database:
         x = [i["main_user"] for i in a]
         data = MyUser.objects.filter(id__in=x).values('id', 'username', 'avatar', 'first_name', 'last_name')
         return [i for i in data]
-

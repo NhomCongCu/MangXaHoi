@@ -12,7 +12,7 @@ import json
 from django.views import View
 
 from home.models import ShiliEmail, MaHoaOneTimePad, Database
-from post.models import Post
+from post.models import Post, Comment
 
 from user.models import MyUser, Follower
 from django.core.files import File
@@ -83,7 +83,7 @@ class Register_user(View):
             content = "We're excited to have you get started. First, you need to confirm your account. Just press the button below."
             theme = ShiliEmail()
             msg_html = theme.form_mail(url, content, email)
-            send_mail( "Welcome to Shili!", "Hello", "PLC", [email], html_message=msg_html, fail_silently=False)
+            send_mail("Welcome to Shili!", "Hello", "PLC", [email], html_message=msg_html, fail_silently=False)
             return HttpResponse(
                 'Đăng kí thành công tài khoản. Kiểm tra email để nhận liên kết kích hoạt tài khoản')
         else:
@@ -208,6 +208,6 @@ class ApiGetContent(View):
             x = [i["followres"] for i in a] + [request.user.id]
             x = Post.objects.filter(user__id__in=x).exclude(public="Chỉ Mình Tôi").order_by('-created_at')
             out = Database().convert_post(x)
-            return JsonResponse({'result': out})
+            return JsonResponse(out, safe=False)
         else:
             return redirect('home:home')

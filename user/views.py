@@ -123,7 +123,8 @@ class AllUser(View):
         if request.user.is_authenticated:
             data = Follower.objects.filter(main_user=request.user).values('followres_id')
             x = [i["followres_id"] for i in data]
-            all_user = MyUser.objects.all().exclude(id__in=[request.user.id] + x).values('id', 'username', 'avatar', 'first_name', 'last_name')
+            all_user = MyUser.objects.all().exclude(id__in=[request.user.id] + x).values('id', 'username', 'avatar',
+                                                                                         'first_name', 'last_name')
             all_user = [i for i in all_user]
             return JsonResponse({'result': all_user})
         else:

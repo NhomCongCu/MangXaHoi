@@ -58,6 +58,7 @@ let home = new Vue({
     created: function () {
         this.get_api_top_hashtag();
         this.get_api_your_friend();
+        console.log(2222);
         // setTimeout(() => this.get_api_your_friend(), 0)
         // setInterval(() => this.get_api_your_friend(), 10000)
         switch (this.page) {

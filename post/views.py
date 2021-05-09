@@ -20,9 +20,8 @@ class ShowPost(View):
     def post(self, request, post_id):
         if request.user.is_authenticated:
             x = Post.objects.filter(post=post_id)
-            db = Database()
-            out = db.convert_post(x)
-            return JsonResponse({'result': out})
+            result = Database().convert_post(x)
+            return JsonResponse(result, safe=False)
         else:
             return redirect('home:login')
 
@@ -40,8 +39,8 @@ class TopHashtagPost(View):
             x = list(Post.objects.all().values('hashtag').annotate(soluot=Count('hashtag')).order_by('-soluot'))[:3]
             list_ht = [i["hashtag"] for i in x]
             posts = Post.objects.filter(hashtag__in=list_ht).order_by('-created_at')
-            posts = database.convert_post(posts)
-            return JsonResponse({'result': posts})
+            result = database.convert_post(posts)
+            return JsonResponse(result, safe=False)
         else:
             return redirect('home:login')
 
@@ -121,8 +120,8 @@ class ApiHashtag(View):
         if request.user.is_authenticated:
             posts = Post.objects.filter(hashtag=hashtag.upper()).order_by('-created_at')
             database = Database()
-            posts = database.convert_post(posts)
-            return JsonResponse({'result': posts})
+            result = database.convert_post(posts)
+            return JsonResponse(result, safe=False)
         else:
             return redirect('home:login')
 
@@ -149,14 +148,14 @@ class Comment_post(View):
                 return HttpResponse('bình luận thành công, hãy tiếp tục tương tác nhé')
         except:
             pass
-        z = Comment.objects.filter(post=data['post_id'])
+        z = Comment.objects.filter(post=data['post_id']).order_by('-created_at')
         comments = []
         for i in z:
             d = model_to_dict(i.user)
             del d['password'], d['cover_image'], d['avatar'], d['email'], d['date_joined']
             out = {**model_to_dict(i), **d, "created_at": i.created_at.strftime("%H:%M:%S ngày %m/%d/%Y")}
             comments.append(out)
-        return JsonResponse({'result': comments})
+        return JsonResponse(comments, safe=False)
 
 
 class Delete_comment(View):

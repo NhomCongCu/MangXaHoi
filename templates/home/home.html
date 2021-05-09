@@ -7,8 +7,8 @@
 {% endblock data %}
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
 {% block noidung %}
-    <template v-if="api_post.result && api_post.result.length">
-        <template v-for="item in api_post.result">
+    <template v-if="api_post && api_post.length">
+        <template v-for="(item,i) in api_post">
             <div class="baidang mb-5">
                 <div class="post_thongtin">
                     <img v-if="item.avatar" :src="`/media/${item.avatar}`" class="post_avatar"
@@ -44,22 +44,21 @@
                     <i class="fas fa-hashtag"></i>[[item.hashtag]]</a>
                 <img v-if="item.photo" :src="`/media/${item.photo}`" class="post_image"
                      :alt="item.photo" alt="">
-                <input type="text" v-model="comment.content_input"
-                       @keyup.enter="comment_func(item.post)"
+                <input type="text" v-model="comment[i]"
+                       @keyup.enter="comment_func(item.post,i)"
                        class="col-12 px-4 py-2 cmt_input"
                        placeholder="Để lại bình luận của bạn">
-                <div class="comment container row p-2 my-3 mx-3 col-11" v-for="key in comment.comment_show.result"
-                     v-if="key.post == item.post" :key="key.comment">
+                <div class="comment container row p-2 my-3 mx-3 col-11" v-for="key in item.comments" :key="key.comment">
                     <div class="col-12">
-                        <a class="comment_name" :href="domain + `/profile/${ key.username}`">[[item.first_name + " "
-                            +item.last_name]]</a>
+                        <a class="comment_name" :href="domain + `/profile/${ key.username}`">
+                            [[key.first_name + " " +key.last_name]]</a>
                         <small class="mx-3"><i class="far fa-clock"></i> [[key.created_at]]</small>
-                        <i v-if="user_id == key.id " @click="comment_delete_func(item.post,key.comment)"
+                        <i v-if="user_id == key.id " @click="comment_delete_func(item.post,key.comment,i)"
                            class="fas fa-trash-alt remove_cmt"></i>
                     </div>
                     <div class="col-12 content_cmt">[[key.content]]</div>
                 </div>
-                <div class="show_cmt mt-3 mx-3 col-12" @click="comment_show_func(item.post)"><i
+                <div class="show_cmt mt-3 mx-3 col-12" @click="comment_show_func(item.post,i)"><i
                         class="fas fa-share"></i>
                     Hiển thị bình luận
                 </div>
