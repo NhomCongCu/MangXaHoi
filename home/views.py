@@ -20,7 +20,8 @@ from django.core.files import File
 
 class Test(View):
     def get(self, request):
-            return render(request, 'home/index1.html')
+        return render(request, 'home/index2.html')
+
 
 class Index(View):
     def get(self, request):
@@ -38,23 +39,21 @@ class Index(View):
 class Login_user(View):
     def post(self, request):
         if request.method == 'POST':
-            data = json.loads(request.body.decode('utf-8'))
-            username = data['username']
-            password = data['password']
+            password = request.POST.get('password')
+            username = request.POST.get('username')
             try:
                 user = authenticate(username=MyUser.objects.get(email=username), password=password)
             except:
                 user = authenticate(username=username, password=password)
             if user:
                 login(request, user)
-                return HttpResponse('success')
+                return redirect('home:home')
             else:
-                return HttpResponse(
-                    'Thông tin đăng nhập không chính xác hoặc tài khoản này chưa được kích hoạt. Vui lòng kiểm tra lại')
-            # try:
-            #     user = authenticate(username=MyUser.objects.get(email=username), password=password)
-            # except:
-            #     user = authenticate(username=username, password=password)
+                err = [
+                    'Thông tin đăng nhập không chính xác hoặc tài khoản này chưa được kích hoạt. Vui lòng kiểm tra lại']
+                print(username)
+                return render(request, 'home/index.html',
+                              {'username': username, 'password': password, 'err': err, 'themes': 'login'})
 
 
 def logout_user(request):
@@ -67,17 +66,32 @@ def logout_user(request):
 
 class Register_user(View):
     def post(self, request):
-        data = json.loads(request.body.decode('utf-8'))
-        email = data['email']
-        if not MyUser.objects.filter(email=email).exists():
-            new_user = MyUser()
-            new_user.first_name = data['firstname']
-            new_user.last_name = data['lastname']
-            new_user.username = data['username']
-            new_user.email = data['email']
-            new_user.set_password(data['password1'])
-            new_user.birthday = data['birthday']
-            new_user.gender = data['gender']
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+        new_user = MyUser()
+        new_user.first_name = request.POST.get('first_name')
+        new_user.last_name = request.POST.get('last_name')
+        new_user.username = request.POST.get('username')
+        new_user.email = request.POST.get('email')
+        new_user.email = request.POST.get('email')
+        new_user.birthday = request.POST.get('birthday')
+        new_user.gender = request.POST.get('gender')
+        password = {'password1': password1, 'password2': password2, }
+        err = []
+        x = True
+        if MyUser.objects.filter(username=new_user.username):
+            x = x and False
+            err.append('Username này đã tồn tại trong hệ thống, xin thử lại')
+        if MyUser.objects.filter(email=new_user.email):
+            x = x and False
+            err.append('Địa chỉ email đã tồn tại trong hệ thống, Hãy check email khác')
+        if not x:
+            return render(request, 'home/index.html',
+                          {'newuser': new_user, 'password': password, 'themes': 'register',
+                           'err': err})
+        else:
+            email = new_user.email
+            new_user.set_password(password1)
             new_user.is_active = 0
             new_user.save()
             one_time_pad = MaHoaOneTimePad()
@@ -88,16 +102,14 @@ class Register_user(View):
             theme = ShiliEmail()
             msg_html = theme.form_mail(url, content, email)
             send_mail("Welcome to Shili!", "Hello", "PLC", [email], html_message=msg_html, fail_silently=False)
-            return HttpResponse(
-                'Đăng kí thành công tài khoản. Kiểm tra email để nhận liên kết kích hoạt tài khoản')
-        else:
-            return HttpResponse('Có lỗi xảy ra! Vui lòng thử lại')
+            err.append('Đăng kí thành công tài khoản. Kiểm tra email để nhận liên kết kích hoạt tài khoản')
+            # return render(request, 'home/index.html', {'themes': 'register',  'err': err})
+            return redirect('home:test')
 
 
 class Send_pass(View):
     def post(self, request):
-        data = json.loads(request.body.decode('utf-8'))
-        email = data['email']
+        email = request.POST.get('email')
         if MyUser.objects.filter(email=email).exists():
             one_time_pad = MaHoaOneTimePad()
             result = one_time_pad.ma_hoa(email)
@@ -110,13 +122,13 @@ class Send_pass(View):
             msg_html = theme.form_mail(url, content, email, 'xacthuc')
             send_mail(mail_title, mail_content, "PLC", [email], html_message=msg_html, fail_silently=False)
             return HttpResponse('Kiểm tra email để lấy liên kết đến trang thay đổi mật khẩu')
-        return HttpResponse('Email này không tồn tại trong hệ thống,vui lòng kiểm tra lại')
+        err = ['Email này không tồn tại trong hệ thống,vui lòng kiểm tra lại']
+        return render(request, 'home/index.html', {'email': email, 'themes': 'forgotPass', 'err': err})
 
 
 class Xac_thuc(View):
     def post(self, request):
-        data = json.loads(request.body.decode('utf-8'))
-        email = data['email']
+        email = request.POST.get('email')
         if MyUser.objects.filter(email=email):
             one_time_pad = MaHoaOneTimePad()
             result = one_time_pad.ma_hoa(email)
@@ -128,8 +140,10 @@ class Xac_thuc(View):
             theme = ShiliEmail()
             msg_html = theme.form_mail(url, content, email)
             send_mail(mail_title, mail_content, "PLC", [email], html_message=msg_html, fail_silently=False)
-            return HttpResponse('Kiểm tra email để lấy liên kết đến trang xác thực tài khoản')
-        return HttpResponse('Email này không tồn tại trong hệ thống, vui lòng kiểm tra lại')
+            return render(request, 'home/index.html', {'email': email, 'themes': 'kich_hoat', 'err': [
+                'Kiểm tra email để lấy liên kết đến trang xác thực tài khoản']})
+        return render(request, 'home/index.html', {'email': email, 'themes': 'kich_hoat', 'err': [
+            'Email này không tồn tại trong hệ thống, vui lòng kiểm tra lại']})
 
 
 class Xacthuc(View):
