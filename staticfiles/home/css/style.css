@@ -1,0 +1,118 @@
+@import url("https://fonts.googleapis.com/css2?family=Berkshire+Swash&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap");
+* {
+  font-family: 'Nunito', sans-serif;
+  margin: 0; }
+
+#index_login {
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: animation 1.5s ease-in-out; }
+
+@keyframes animation {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+.bar {
+  width: 100%;
+  height: 50px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: #2e876b; }
+
+.main {
+  margin-top: 100px;
+  text-align: center;
+  display: flex;
+  align-content: space-around;
+  justify-content: space-around;
+  flex-wrap: wrap; }
+  .main .text {
+    margin: auto; }
+    .main .text h1 {
+      font-size: 40px;
+      color: #61656d; }
+      .main .text h1 span {
+        font-family: 'Berkshire Swash', cursive;
+        font-weight: bold;
+        color: #F18E16;
+        font-size: 130%;
+        text-transform: capitalize; }
+    .main .text .button {
+      margin: 30px auto;
+      padding: 15px 45px;
+      background-image: linear-gradient(to right, #44A08D 0%, #093637 51%, #44A08D 100%);
+      text-align: center;
+      text-transform: uppercase;
+      transition: 0.5s;
+      background-size: 200% auto;
+      color: white;
+      box-shadow: 0 0 20px #eee;
+      border-radius: 10px;
+      display: block;
+      border: none;
+      font-weight: bold; }
+      .main .text .button:hover {
+        background-position: right center;
+        /* change the direction of the change here */
+        color: #fff;
+        text-decoration: none; }
+  .main img {
+    width: 100%;
+    max-width: 500px; }
+
+#intro {
+  margin: 100px 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  align-content: flex-end;
+  justify-content: space-around; }
+  #intro .text {
+    max-width: 550px;
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: self-start;
+    justify-content: center;
+    flex-wrap: wrap; }
+    #intro .text h2 {
+      text-align: center; }
+    #intro .text .card {
+      margin: 20px;
+      padding: 20px;
+      background-color: #ececec;
+      border-radius: 10px;
+      box-shadow: 0 0 5px #ffffff; }
+      #intro .text .card h5 {
+        font-size: 110%; }
+      #intro .text .card a {
+        font-weight: bold;
+        color: #1d1d1d; }
+  #intro img {
+    width: 100%;
+    max-width: 400px; }
+
+.bg_login {
+  width: 100%;
+  height: 100%;
+  background-color: #868282;
+  position: absolute;
+  opacity: 0.2;
+  z-index: 0;
+  top: 0;
+  left: 0; }
+
+.login {
+  padding: 10px 10px 10px 30px;
+  width: 50%;
+  top: 20%;
+  left: 25%;
+  position: fixed;
+  background-color: #dbd8d8;
+  z-index: 10; }
+
+/*# sourceMappingURL=style.css.map */
