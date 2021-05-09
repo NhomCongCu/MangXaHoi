@@ -18,6 +18,10 @@ from user.models import MyUser, Follower
 from django.core.files import File
 
 
+class Test(View):
+    def get(self, request):
+            return render(request, 'home/index1.html')
+
 class Index(View):
     def get(self, request):
         if request.user.is_authenticated:
