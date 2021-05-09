@@ -47,10 +47,7 @@ let home = new Vue({
                 chat_content: {},
                 boxchat_on: false,
             },
-            comment: {
-                content_input: null,
-                comment_show: {},
-            },
+            comment: [],
 
 
         }
@@ -58,15 +55,13 @@ let home = new Vue({
     created: function () {
         this.get_api_top_hashtag();
         this.get_api_your_friend();
-        console.log(2222);
-        // setTimeout(() => this.get_api_your_friend(), 0)
-        // setInterval(() => this.get_api_your_friend(), 10000)
         switch (this.page) {
             case 'Trang chủ Shili':
                 this.get_api_post();
                 break;
             case 'Bài viết với ID là':
                 this.api_one_post_func();
+
                 break;
             case 'Các bài viết nổi bật trong tuần':
                 this.api_top3_hashtag_post();
@@ -84,12 +79,11 @@ let home = new Vue({
     },
     watch: {
         thongBao: function () {
-            setTimeout(() => this.thongBao.shift(), 5000)
+            setTimeout(() => this.thongBao.shift(), 5000);
         }
     },
 
     methods: {
-
         get_profile_func: function () {
             axios({
                 method: 'post',
@@ -99,7 +93,7 @@ let home = new Vue({
                 },
             }).then(response => {
                 this.get_profile = response.data;
-
+                this.api_post = this.get_profile.profile_posts;
             })
         },
         get_api_post: function () {
@@ -133,6 +127,7 @@ let home = new Vue({
                 url: "/post/" + this.post_id + '/',
             }).then(response => {
                 this.api_post = response.data;
+                console.log(response.data)
             })
         },
         api_top3_hashtag_post: function () {
@@ -219,23 +214,27 @@ let home = new Vue({
                 this.thongBao.push(response.data)
             })
         },
-        comment_func: function (post_id) {
-            if (home.comment.content_input) {
+        comment_func: function (post_id, i) {
+            if (home.comment[i]) {
                 axios({
                     method: 'post',
                     url: '/post/comments/',
                     data: {
-                        content_input: home.comment.content_input,
+                        content_input: home.comment[i],
                         post_id: post_id,
                     },
                 }).then(response => {
-                    home.comment.content_input = null;
-                    this.get_cmt(post_id);
+                    home.comment[i] = null;
+                    if (home.api_post[i].comments === false) {
+                        this.comment_show_func(post_id, i);
+                    } else {
+                        this.get_cmt(post_id, i);
+                    }
                     this.thongBao.push(response.data)
                 })
             }
         },
-        get_cmt: function (post_id) {
+        get_cmt: function (post_id, i) {
             axios({
                 method: 'post',
                 url: '/post/comments/',
@@ -243,25 +242,23 @@ let home = new Vue({
                     post_id: `${post_id}`,
                 },
             }).then(response => {
-                home.comment.comment_show = response.data;
+                home.api_post[i].comments = response.data;
             })
         },
-        comment_show_func: function (post_id) {
-            if (!home.comment.comment_show.result) {
-                home.comment.comment_show = {};
+        comment_show_func: function (post_id, i) {
+            x = home.api_post[i].comments
+            if (x === false) {
                 clearInterval(this.run_Interval_cmt)
-                this.get_cmt(post_id)
+                this.get_cmt(post_id, i)
                 this.run_Interval_cmt = setInterval(function () {
-                    home.get_cmt(post_id)
+                    home.get_cmt(post_id, i)
                 }, 1000);
             } else {
-                home.comment.comment_show = {};
+                home.api_post[i].comments = false;
                 clearInterval(this.run_Interval_cmt)
             }
-
-
         },
-        comment_delete_func: function (post_id, comment_id) {
+        comment_delete_func: function (post_id, comment_id, i) {
             axios({
                 method: 'post',
                 url: '/post/delete_comment/',
@@ -270,7 +267,7 @@ let home = new Vue({
                     comment_id: comment_id,
                 },
             }).then(response => {
-                this.get_cmt(post_id);
+                this.get_cmt(post_id, i);
                 this.thongBao.push(response.data)
             })
 
