@@ -127,7 +127,7 @@ let home = new Vue({
                 url: "/post/" + this.post_id + '/',
             }).then(response => {
                 this.api_post = response.data;
-                console.log(response.data)
+
             })
         },
         api_top3_hashtag_post: function () {

@@ -73,7 +73,8 @@ class SetPost(View):
 class EditPost(View):
     def get(self, request, post_id):
         if request.user.is_authenticated:
-            return render(request, 'post/edit_post.html', {'post_id': post_id, 'page': 'Bài viết với ID là'})
+            get_post = Post.objects.get(post=post_id)
+            return render(request, 'post/edit_post.html', {'get_post': get_post})
         else:
             return redirect('home:home')
 

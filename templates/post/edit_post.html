@@ -1,54 +1,48 @@
 {% extends 'home/base.html' %}
 {% load static %}
-{% block title %}Chỉnh sửa bài viết{% endblock %}
-{% block data %}
-    <div style="display:none" id="data_post"  post_id="{{ post_id }}"></div>
-{% endblock data %}
+{% block title %}Chỉnh sửa bài viết  {{ get_post.post }}{% endblock %}
 {% block noidung %}
-    <div class="container user_follow" v-if="api_post">
-        <template v-for="i in api_post.result">
-            <h3 class="mb-3">Chỉnh sửa bài viết của bạn</h3>
-            <form class="m-3" action="{% url 'post:edit' post_id %}" enctype="multipart/form-data" method="post">
-                {% csrf_token %}
-                <div class="form-floating">
-                            <textarea class="form-control" placeholder="Bạn đang nghĩ điều gì thế" name="content"
-                                      :value="i.content" id="floatingTextarea" required></textarea>
-                    <label for="floatingTextarea">Thay thế nội dung</label>
+    <div class="container user_follow">
+        <h3 class="mb-3">Chỉnh sửa bài viết của bạn</h3>
+        <form class="m-3" action="{% url 'post:edit' get_post.post %}" enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            <div class="form-floating">
+                            <textarea class="form-control" placeholder="Bạn đang nghĩ điều gì thế"
+                                      name="content" required> {{ get_post.content }}</textarea>
+                <label>Thay thế nội dung</label>
+            </div>
+            <div class="my-3">
+                <label class="form-label">Tải lên ảnh cho bài viết</label>
+                <input name="photo" accept='image/*' class="form-control" type="file">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">#</span>
                 </div>
-                <div class="my-3">
-                    <label for="formFile" class="form-label">Tải lên ảnh cho bài viết</label>
-                    <input name="photo" accept='image/*' class="form-control" type="file" id="formFile">
+                <input type="text" name="hashtag" value="{{ get_post.hashtag }}" class="form-control" required
+                       placeholder="Hashtag">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">#</span>
                 </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">#</span>
-                    </div>
-                    <input type="text" name="hashtag" :value="i.hashtag" class="form-control" required
-                           placeholder="Hashtag"
-                           aria-label="Username" aria-describedby="basic-addon1">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">#</span>
-                    </div>
-                    <select class="form-select" name="public" aria-label="Default select example">
-                        <option selected>[[i.public]]</option>
-                        <option>Công Khai</option>
-                        <option>Chỉ Mình Tôi</option>
-                    </select>
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">#</span>
-                    </div>
-                    <select class="form-select" name="feeling" aria-label="Default select example">
-                        <option selected>[[i.feeling]]</option>
-                        <option>Cảm thấy vui sướng</option>
-                        <option>Cảm thấy khá tệ</option>
-                        <option>Cảm thấy thú vị</option>
-                    </select>
+                <select class="form-select" name="public" aria-label="Default select example">
+                    <option selected>{{ get_post.public }}</option>
+                    <option>Công Khai</option>
+                    <option>Chỉ Mình Tôi</option>
+                </select>
+                <div class="input-group-prepend">
+                    <span class="input-group-text">#</span>
                 </div>
-                <button type="submit" class="btn btn-dark">Đăng ngay</button>
-            </form>
-            <img v-if="i.photo" :alt="i.photo" class="post_image"
-                     :src="`/media/${i.photo}`">
-        </template>
+                <select class="form-select" name="feeling" aria-label="Default select example">
+                    <option selected>{{ get_post.feeling }}</option>
+                    <option>Cảm thấy vui sướng</option>
+                    <option>Cảm thấy khá tệ</option>
+                    <option>Cảm thấy thú vị</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-dark">Đăng ngay</button>
+        </form>
+        {% if get_post.photo %}
+            <img alt="{{ get_post.photo }}" class="post_image" src="/media/{{ get_post.photo }}">
+        {% endif %}
     </div>
-
 {% endblock noidung %}
