@@ -18,11 +18,18 @@ html, body, ul {
   margin: 0 auto;
   animation: animation 1.5s ease-in-out; }
 
+.bg {
+  animation: animation 1.5s ease-in-out; }
+
+.bgout {
+  animation: animation1 1.5s ease-in-out; }
+
 @keyframes animation {
   0% {
-    opacity: 0; }
+    opacity: 0; } }
+@keyframes animation1 {
   100% {
-    opacity: 1; } }
+    opacity: 0; } }
 .bar {
   width: 100%;
   height: 50px;
@@ -104,6 +111,15 @@ html, body, ul {
   position: fixed;
   background-color: #ffffff;
   border-radius: 40px; }
+  @media (max-width: 1023px) {
+    .join {
+      top: 0;
+      min-height: 60%;
+      width: 80%;
+      margin: 5% auto;
+      /* Will not center vertically and won't work in IE6/7. */
+      left: 0;
+      right: 0; } }
 
 .register {
   display: flex;
@@ -112,13 +128,15 @@ html, body, ul {
   justify-content: space-around; }
   .register img {
     max-width: 400px; }
+    @media (max-width: 1023px) {
+      .register img {
+        display: none; } }
 
 :root {
   --animate-duration: 2s; }
 
 .form {
-  max-width: 400px;
-  min-width: 200px; }
+  width: 100%; }
   .form h2 {
     margin: 20px;
     text-align: center; }
@@ -140,8 +158,15 @@ html, body, ul {
         border-radius: 10px;
         border: 1px solid #0e4748;
         outline: none; }
-    .form .field .chia {
-      width: 35%; }
+      @media (max-width: 1023px) {
+        .form .field input {
+          width: 70%; } }
+    @media (max-width: 1023px) {
+      .form .field {
+        justify-content: center; } }
+    @media (max-width: 1023px) {
+      .form .field .chia {
+        width: 70%; } }
     .form .field h4 {
       margin: 10px;
       width: 100%;
@@ -161,6 +186,9 @@ html, body, ul {
   .login img {
     max-width: 450px;
     z-index: -1; }
+    @media (max-width: 1023px) {
+      .login img {
+        display: none; } }
 
 .button {
   margin: 30px auto;

@@ -1,6 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Berkshire+Swash&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap');
 
+$tablet-width: 768px;
+$desktop-width: 1024px;
+
+
+@mixin tablet {
+  @media (max-width: #{$desktop-width - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$desktop-width}) {
+    @content;
+  }
+}
+
 * {
   font-family: 'Nunito', sans-serif;
   margin: 0;
@@ -24,13 +40,22 @@ html, body, ul {
   animation: animation 1.5s ease-in-out;
 
 }
+.bg {
+  animation: animation 1.5s ease-in-out;
+
+}.bgout {
+  animation: animation1 1.5s ease-in-out;
+
+}
 
 @keyframes animation {
   0% {
     opacity: 0;
   }
+}
+@keyframes animation1 {
   100% {
-    opacity: 1;
+    opacity: 0;
   }
 }
 
@@ -76,8 +101,12 @@ html, body, ul {
   img {
     width: 100%;
     max-width: 500px;
+
   }
+
+
 }
+
 
 #intro {
   margin: 100px 0;
@@ -143,6 +172,14 @@ html, body, ul {
   position: fixed;
   background-color: #ffffff;
   border-radius: 40px;
+  @include tablet {
+    top: 0;
+    min-height:60%;
+    width: 80%;
+    margin: 5% auto; /* Will not center vertically and won't work in IE6/7. */
+    left: 0;
+    right: 0;
+  }
 }
 
 .register {
@@ -153,7 +190,9 @@ html, body, ul {
 
   img {
     max-width: 400px;
-
+    @include tablet {
+      display: none;
+    }
   }
 
 }
@@ -163,8 +202,8 @@ html, body, ul {
 }
 
 .form {
-  max-width: 400px;
-  min-width: 200px;
+  width: 100%;
+
 
   h2 {
     margin: 20px;
@@ -191,10 +230,21 @@ html, body, ul {
         border: 1px solid #0e4748;
         outline: none;
       }
+
+      @include tablet {
+        width: 70%;
+      }
+
+    }
+
+    @include tablet {
+      justify-content: center;
     }
 
     .chia {
-      width: 35%;
+      @include tablet {
+        width: 70%;
+      }
     }
 
     h4 {
@@ -226,6 +276,9 @@ html, body, ul {
   img {
     max-width: 450px;
     z-index: -1;
+    @include tablet {
+      display: none;
+    }
   }
 }
 
