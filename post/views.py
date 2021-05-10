@@ -13,36 +13,24 @@ from post.models import Comment, Post
 class ShowPost(View):
     def get(self, request, post_id):
         if request.user.is_authenticated:
-            return render(request, 'home/home.html', {'post_id': post_id, 'page': 'Bài viết với ID là'})
+            x = Post.objects.filter(post=post_id)
+            post = Database().convert_post(x)
+            return render(request, 'home/home.html', {'posts': post})
         else:
             return redirect('home:home')
-
-    def post(self, request, post_id):
-        if request.user.is_authenticated:
-            x = Post.objects.filter(post=post_id)
-            result = Database().convert_post(x)
-            return JsonResponse(result, safe=False)
-        else:
-            return redirect('home:login')
 
 
 class TopHashtagPost(View):
     def get(self, request):
-        if request.user.is_authenticated:
-            return render(request, 'home/home.html', {'page': 'Các bài viết nổi bật trong tuần'})
-        else:
-            return redirect('home:home')
-
-    def post(self, request):
         if request.user.is_authenticated:
             database = Database()
             x = list(Post.objects.all().values('hashtag').annotate(soluot=Count('hashtag')).order_by('-soluot'))[:3]
             list_ht = [i["hashtag"] for i in x]
             posts = Post.objects.filter(hashtag__in=list_ht).order_by('-created_at')
             result = database.convert_post(posts)
-            return JsonResponse(result, safe=False)
+            return render(request, 'home/home.html', {'posts': result, 'page': 'Các bài viết nổi bật trong tuần'})
         else:
-            return redirect('home:login')
+            return redirect('home:home')
 
 
 class SetPost(View):
@@ -98,33 +86,24 @@ class EditPost(View):
 
 
 class DeletePost(View):
-    def post(self, request):
+    def get(self, request, post_id):
         if request.user.is_authenticated:
-            data = json.loads(request.body.decode('utf-8'))
-            get_post = Post.objects.get(post=data['post_id'])
+            get_post = Post.objects.get(post=post_id)
             if get_post.user_id == request.user.id:
                 get_post.delete()
-            return HttpResponse('Xóa Thành công')
-
-        else:
-            return HttpResponse('Tài khoản chưa đăng nhập')
-
-
-class ApiHashtag(View):
-    def get(self, request, hashtag):
-        if request.user.is_authenticated:
-            return render(request, 'home/home.html', {'hashtag_post': hashtag, 'page': 'Bài viết với Hashtag'})
+            return redirect('post:TopHashtagPost')
         else:
             return redirect('home:home')
 
-    def post(self, request, hashtag):
+
+class OneHashtag(View):
+    def get(self, request, hashtag):
         if request.user.is_authenticated:
             posts = Post.objects.filter(hashtag=hashtag.upper()).order_by('-created_at')
-            database = Database()
-            result = database.convert_post(posts)
-            return JsonResponse(result, safe=False)
+            result = Database().convert_post(posts)
+            return render(request, 'home/home.html', {'posts': result})
         else:
-            return redirect('home:login')
+            return redirect('home:home')
 
 
 class ApiTopHashtag(View):

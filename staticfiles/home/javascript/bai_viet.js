@@ -11,7 +11,7 @@ let home = new Vue({
             user_id: $("#data").attr("user_id"),
             email: $("#data").attr("email"),
             username: $("#username").attr("username"),
-            post_id: $("#data_post").attr("post_id"),
+
             hashtag_post: $("#data_post").attr("hashtag_post"),
             get_profile: {},
             api_get_all_user: {},
@@ -48,6 +48,7 @@ let home = new Vue({
                 boxchat_on: false,
             },
             comment: [],
+            comment_data: [],
 
 
         }
@@ -55,20 +56,8 @@ let home = new Vue({
     created: function () {
         this.get_api_top_hashtag();
         this.get_api_your_friend();
-        switch (this.page) {
-            case 'Trang chủ Shili':
-                this.get_api_post();
-                break;
-            case 'Bài viết với ID là':
-                this.api_one_post_func();
 
-                break;
-            case 'Các bài viết nổi bật trong tuần':
-                this.api_top3_hashtag_post();
-                break;
-            case 'Bài viết với Hashtag':
-                this.api_hashtag_post_func();
-                break;
+        switch (this.page) {
             case 'profile':
                 this.get_profile_func()
                 break;
@@ -96,14 +85,7 @@ let home = new Vue({
                 this.api_post = this.get_profile.profile_posts;
             })
         },
-        get_api_post: function () {
-            axios({
-                method: 'post',
-                url: '/api/get_content/',
-            }).then(response => {
-                return this.api_post = response.data;
-            })
-        },
+
 
         get_api_top_hashtag: function () {
             axios({
@@ -121,34 +103,7 @@ let home = new Vue({
                 this.api_your_friend = response.data;
             });
         },
-        api_one_post_func: function () {
-            axios({
-                method: 'post',
-                url: "/post/" + this.post_id + '/',
-            }).then(response => {
-                this.api_post = response.data;
-                console.log(response.data)
-            })
-        },
-        api_top3_hashtag_post: function () {
-            axios({
-                method: 'post',
-                url: "/post/",
-            }).then(response => {
-                this.api_post = response.data;
-            })
-        },
-        api_hashtag_post_func: function () {
-            axios({
-                method: 'post',
-                url: "/post/hashtag/" + this.hashtag_post,
-                data: {
-                    hashtag: this.hashtag_post,
-                },
-            }).then(response => {
-                this.api_post = response.data;
-            })
-        },
+
 
         api_get_all_user_func: function () {
             axios({
@@ -162,6 +117,10 @@ let home = new Vue({
         scrollToTop() {
             window.scrollTo(0, 0);
         },
+
+
+
+
 
         forgotPass_func: function (email) {
             if (email === this.email) {
@@ -178,17 +137,6 @@ let home = new Vue({
             } else {
                 this.thongBao.push('Bạn không phải chủ tài khoản này')
             }
-        },
-        delete_post: function (post_id) {
-            axios({
-                method: 'post',
-                url: "/post/delete/",
-                data: {
-                    post_id: post_id,
-                },
-            }).then(response => {
-                this.open_link('/post/')
-            })
         },
         check_friend: function (user_id) {
             for (let a of this.api_your_friend.result) {
@@ -225,7 +173,7 @@ let home = new Vue({
                     },
                 }).then(response => {
                     home.comment[i] = null;
-                    if (home.api_post[i].comments === false) {
+                    if (this.comment_data[i] === false) {
                         this.comment_show_func(post_id, i);
                     } else {
                         this.get_cmt(post_id, i);
@@ -242,19 +190,19 @@ let home = new Vue({
                     post_id: `${post_id}`,
                 },
             }).then(response => {
-                home.api_post[i].comments = response.data;
+                home.comment_data[i] = response.data;
             })
         },
         comment_show_func: function (post_id, i) {
-            x = home.api_post[i].comments
-            if (x === false) {
+            x = this.comment_data[i]
+            if (x != false) {
                 clearInterval(this.run_Interval_cmt)
                 this.get_cmt(post_id, i)
                 this.run_Interval_cmt = setInterval(function () {
                     home.get_cmt(post_id, i)
                 }, 1000);
             } else {
-                home.api_post[i].comments = false;
+                this.comment_data[i] = false;
                 clearInterval(this.run_Interval_cmt)
             }
         },

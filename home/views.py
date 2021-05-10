@@ -32,7 +32,7 @@ class Test(View):
         if dater != today:
             Crawl = CrawlPage()
             data = Crawl.crawNewsData('https://tuoitre.vn', 'https://tuoitre.vn/tin-moi-nhat.htm')
-            data.append({"today":str(today)})
+            data.append({"today": str(today)})
             with open(file_path, 'w') as outfile:
                 json.dump(data, outfile)
         with open(file_path) as json_file:
@@ -47,7 +47,12 @@ class Index(View):
             database = Database()
             kt = database.get_watching(request.user.username)
             if kt:
-                return render(request, 'home/home.html', {'page': 'Trang chủ Shili'})
+                a = Follower.objects.filter(main_user=int(request.user.id)).values('followres')
+                x = [i["followres"] for i in a] + [request.user.id]
+                x = Post.objects.filter(user__id__in=x).exclude(public="Chỉ Mình Tôi").order_by('-created_at')
+                out = Database().convert_post(x)
+                # return JsonResponse(out, safe=False)
+                return render(request, 'home/home.html', {'posts': out, 'page': 'Trang chủ Shili'})
             else:
                 return render(request, 'user/all_user.html', {'page': 'all_user'})
         else:
@@ -237,13 +242,13 @@ class Check(View):
         return HttpResponse('')
 
 
-class ApiGetContent(View):
-    def post(self, request):
-        if request.user.is_authenticated:
-            a = Follower.objects.filter(main_user=int(request.user.id)).values('followres')
-            x = [i["followres"] for i in a] + [request.user.id]
-            x = Post.objects.filter(user__id__in=x).exclude(public="Chỉ Mình Tôi").order_by('-created_at')
-            out = Database().convert_post(x)
-            return JsonResponse(out, safe=False)
-        else:
-            return redirect('home:home')
+# class ApiGetContent(View):
+#     def post(self, request):
+#         if request.user.is_authenticated:
+#             a = Follower.objects.filter(main_user=int(request.user.id)).values('followres')
+#             x = [i["followres"] for i in a] + [request.user.id]
+#             x = Post.objects.filter(user__id__in=x).exclude(public="Chỉ Mình Tôi").order_by('-created_at')
+#             out = Database().convert_post(x)
+#             return JsonResponse(out, safe=False)
+#         else:
+#             return redirect('home:home')

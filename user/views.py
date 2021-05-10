@@ -14,7 +14,11 @@ class Profile(View):
         if request.user.is_authenticated:
             if request.user.username == user_username:
                 return redirect('user:profile_main')
-            return render(request, 'user/profile.html', {'username': user_username, 'page': 'profile'})
+
+            database = Database()
+            profile = database.get_profile(user_username)[0]
+            posts = database.get_profile_posts(user_username, request.user.username)
+            return render(request, 'user/profile.html', {'posts': posts,'profile': profile, 'username': user_username, 'page': 'profile'})
         else:
             return redirect('home:home')
 
@@ -22,7 +26,12 @@ class Profile(View):
 class ProfileMain(View):
     def get(self, request):
         if request.user.is_authenticated:
-            return render(request, 'user/profile.html', {'username': request.user.username, 'page': 'profile'})
+            database = Database()
+            profile = database.get_profile(request.user.username)[0]
+            posts = database.get_profile_posts(request.user.username, request.user.username)
+
+            return render(request, 'user/profile.html',
+                          {'posts': posts,'profile': profile, 'username': request.user.username, 'page': 'profile'})
         else:
             return redirect('home:home')
 
@@ -32,13 +41,11 @@ class ApiGetProfile(View):
         if request.user.is_authenticated:
             data = json.loads(request.body.decode('utf-8'))
             database = Database()
-            profile = database.get_profile(data['username'])
-            profile_posts = database.get_profile_posts(data['username'], request.user.username)
+
             profile_watching = database.get_watching(data['username'])
             profile_followed = database.get_followed(data['username'])
             return JsonResponse(
-                {'profile': profile, 'profile_posts': profile_posts, 'dangtheodoi': profile_watching,
-                 'duoctheodoi': profile_followed})
+                {'dangtheodoi': profile_watching,                 'duoctheodoi': profile_followed})
         else:
             return redirect('home:home')
 
@@ -123,7 +130,7 @@ class AllUser(View):
         if request.user.is_authenticated:
             data = Follower.objects.filter(main_user=request.user).values('followres_id')
             x = [i["followres_id"] for i in data]
-            all_user = MyUser.objects.all().exclude(id__in=[request.user.id] + x).values('id', 'username', 'avatar',
+            all_user = MyUser.objects.all().filter(is_active=True).exclude(id__in=[request.user.id] + x).values('id', 'username', 'avatar',
                                                                                          'first_name', 'last_name')
             all_user = [i for i in all_user]
             return JsonResponse({'result': all_user})
