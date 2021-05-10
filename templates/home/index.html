@@ -12,7 +12,12 @@
     <script type="text/javascript" src="https://code.jquery.com/jquery-latest.pack.js"></script>
     <link rel="stylesheet" href="{% static 'home/css/style.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+
+
+    </style>
 </head>
+
 <body>
 {% if themes %}
     <div style="display:none" id="themes" themes="'{{ themes }}'">{{ themes }}</div>
@@ -35,7 +40,7 @@
                 <input class="button" type="submit" value="About us"/>
             </form>
         </div>
-        <img src="{% static 'images/Multimedia.png' %}" class="d-block w-100" alt="...">
+        <img src="{% static 'images/Multimedia.png' %}" alt="...">
     </div>
 
     <div id="intro" class="">
@@ -55,10 +60,12 @@
         </div>
     </div>
     {#background#}
-    <template v-if="login_bg ">
-        <div class="bg_login" @click="login_bg=!login_bg "></div>
-    </template>
-
+    <transition name="login" enter-active-class="animate__animated bg"
+                leave-active-class="animate__animated bgout">
+        <template v-if="login_bg ">
+            <div class="bg_login" @click="login_bg=!login_bg "></div>
+        </template>
+    </transition>
     <transition name="login" enter-active-class="animate__animated animate__zoomInDown"
                 leave-active-class="animate__animated animate__bounceOutRight">
         <div class="join" v-if="login_bg">
@@ -66,7 +73,7 @@
                 <template v-if="themes == 'login' || themes == 'kich_hoat'|| themes == 'forgotPass'|| themes == 1 ">
                     <img src="{% static 'images/cryptocurrency.png' %}" alt="...">
                 </template>
-                <transition name="login1" enter-active-class="animate__animated animate__zoomInLeft"
+                <transition name="login1" enter-active-class="animate__animated animate__fadeInLeft"
                             leave-active-class="animate__animated animate__fadeOutRight">
                     <template v-if="themes === 'login'">
 
@@ -93,7 +100,7 @@
                         </div>
                     </template>
                 </transition>
-                <transition name="forgotPass" enter-active-class="animate__animated animate__zoomInLeft"
+                <transition name="forgotPass" enter-active-class="animate__animated animate__fadeInLeft"
                             leave-active-class="animate__animated animate__fadeOutRight">
                     <template v-if="themes === 'forgotPass'">
                         <div class="form ">
@@ -111,7 +118,7 @@
                         </div>
                     </template>
                 </transition>
-                <transition name="kich_hoat" enter-active-class="animate__animated animate__zoomInLeft"
+                <transition name="kich_hoat" enter-active-class="animate__animated animate__fadeInLeft"
                             leave-active-class="animate__animated animate__fadeOutRight">
                     <template v-if="themes === 'kich_hoat'">
                         <div class="form">
@@ -138,44 +145,45 @@
                     <div v-if="themes === 'register'" class=" register">
                         <div class="form">
                             <h2>Đăng ký</h2>
-                            <div class="field">
-                                <form action="{% url 'home:register' %}" enctype="multipart/form-data" method="post">
-                                    {% csrf_token %}
-                                    <input class="chia" type="text" name="first_name" value="{{ newuser.first_name }}"
-                                           placeholder="Họ" required>
-                                    <input class="chia" type="text" name="last_name" value="{{ newuser.last_name }}"
-                                           placeholder="Tên" required>
-                                    <input type="text" name="username" value="{{ newuser.username }}"
-                                           placeholder="Tên đăng nhập" required
-                                           :class="{ do: !sign_up.checkUserName, xanh:sign_up.checkUserName}">
-                                    <input type="email" name="email" value="{{ newuser.email }}" required
-                                           :class="{ do: !sign_up.checkEmail, xanh:sign_up.checkEmail}"
-                                           @input="checkEmail_func" placeholder="Email">
-                                    <input class="chia" type="password" name="password1"
-                                           value="{{ password.password1 }}"
-                                           required
-                                           :class="{ do: !sign_up.checkPassword , xanh:sign_up.checkPassword}"
-                                           autocomplete="on" @input="checkPassword_func"
-                                           placeholder="Mật khẩu">
-                                    <input class="chia" type="password" name="password2"
-                                           value="{{ password.password2 }}"
-                                           required
-                                           :class="{ do: !sign_up.checkPassword, xanh:sign_up.checkPassword}"
-                                           autocomplete="on" @input="checkPassword_func"
-                                           placeholder="Nhập lại mật khẩu">
-                                    <input class="chia" type="date" name="birthday" value="{{ newuser.birthday }}"
-                                           required
-                                           placeholder="Ngày sinh">
-                                    <select class="chia" name="gender" value="{{ newuser.gender }} required">
-                                        <option value="Nam">Nam</option>
-                                        <option value="Nu">Nữ</option>
-                                    </select>
-                                    {% for i in err %}
-                                        <h4 class="my-4  thong_bao"> {{ i }}</h4>
-                                    {% endfor %}
-                                    <button class="button" type="submit">Đăng Kí ngay</button>
-                                </form>
-                            </div>
+
+                            <form class="field" action="{% url 'home:register' %}" enctype="multipart/form-data"
+                                  method="post">
+                                {% csrf_token %}
+                                <input class="chia" type="text" name="first_name" value="{{ newuser.first_name }}"
+                                       placeholder="Họ" required>
+                                <input class="chia" type="text" name="last_name" value="{{ newuser.last_name }}"
+                                       placeholder="Tên" required>
+                                <input type="text" name="username" value="{{ newuser.username }}"
+                                       placeholder="Tên đăng nhập" required
+                                       :class="{ do: !sign_up.checkUserName, xanh:sign_up.checkUserName}">
+                                <input type="email" name="email" value="{{ newuser.email }}" required
+                                       :class="{ do: !sign_up.checkEmail, xanh:sign_up.checkEmail}"
+                                       @input="checkEmail_func" placeholder="Email">
+                                <input class="chia" type="password" name="password1"
+                                       value="{{ password.password1 }}"
+                                       required
+                                       :class="{ do: !sign_up.checkPassword , xanh:sign_up.checkPassword}"
+                                       autocomplete="on" @input="checkPassword_func"
+                                       placeholder="Mật khẩu">
+                                <input class="chia" type="password" name="password2"
+                                       value="{{ password.password2 }}"
+                                       required
+                                       :class="{ do: !sign_up.checkPassword, xanh:sign_up.checkPassword}"
+                                       autocomplete="on" @input="checkPassword_func"
+                                       placeholder="Nhập lại mật khẩu">
+                                <input class="chia" type="date" name="birthday" value="{{ newuser.birthday }}"
+                                       required
+                                       placeholder="Ngày sinh">
+                                <select class="chia" name="gender" value="{{ newuser.gender }} required">
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nu">Nữ</option>
+                                </select>
+                                {% for i in err %}
+                                    <h4 class="my-4  thong_bao"> {{ i }}</h4>
+                                {% endfor %}
+                                <button class="button" type="submit">Đăng Kí ngay</button>
+                            </form>
+
                         </div>
                         <img src="{% static 'images/cryptocurrency.png' %}" alt="...">
                     </div>

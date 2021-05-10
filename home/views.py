@@ -1,6 +1,9 @@
 import os
 import re
+from datetime import date
 
+import requests
+from bs4 import BeautifulSoup
 from django.contrib.auth import authenticate, login, logout
 
 from django.core.mail import send_mail
@@ -11,7 +14,7 @@ import json
 # Create your views here.
 from django.views import View
 
-from home.models import ShiliEmail, MaHoaOneTimePad, Database
+from home.models import ShiliEmail, MaHoaOneTimePad, Database, CrawlPage
 from post.models import Post, Comment
 
 from user.models import MyUser, Follower
@@ -20,7 +23,22 @@ from django.core.files import File
 
 class Test(View):
     def get(self, request):
-        return render(request, 'home/index2.html')
+        today = str(date.today())
+        module_dir = os.path.dirname(__file__)
+        file_path = os.path.join(module_dir, 'stactic/mail/data.txt')
+        with open(file_path) as json_file:
+            data = json.load(json_file)
+        dater = data[len(data) - 1]["today"]
+        if dater != today:
+            Crawl = CrawlPage()
+            data = Crawl.crawNewsData('https://tuoitre.vn', 'https://tuoitre.vn/tin-moi-nhat.htm')
+            data.append({"today":str(today)})
+            with open(file_path, 'w') as outfile:
+                json.dump(data, outfile)
+        with open(file_path) as json_file:
+            data = json.load(json_file)
+        data = data[:len(data) - 1]
+        return render(request, 'home/lacx.html', {'data': data})
 
 
 class Index(View):

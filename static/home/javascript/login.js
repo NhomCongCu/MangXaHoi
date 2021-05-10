@@ -99,7 +99,7 @@ let index_login = new Vue({
 
         chuyen: function (x) {
             this.themes = 1;
-          setTimeout(() => {  this.themes = x }, 500);
+          setTimeout(() => {  this.themes = x }, 1000);
 
         },
 
